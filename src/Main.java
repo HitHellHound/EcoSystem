@@ -1,20 +1,18 @@
+import ecxeptions.WrongDataException;
+import model.Ecosystem;
+import service.SaveFilesService;
+import service.SaveFilesServiceImpl;
+import types.DangerLevel;
+
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
-        Scanner in = new Scanner(System.in);
-        System.out.print("\nInput a number: ");
-        int num = in.nextInt();
-
-        for (int i = 1; i <= num; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+    public static void main(String[] args) throws WrongDataException {
+        SaveFilesService filesService = new SaveFilesServiceImpl();
+        Ecosystem ecosystem = filesService.loadEcosystem("save_firstEcosyst_10.txt");
+        System.out.println(ecosystem);
+        filesService.saveEcosystem(ecosystem);
     }
 }

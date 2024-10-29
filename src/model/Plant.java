@@ -1,7 +1,5 @@
 package model;
 
-import types.MealType;
-
 public class Plant {
     private final String name;
     private int count;
@@ -11,11 +9,11 @@ public class Plant {
     private final float neededSun;
     private final float normalTemperature;
 
-    private final double deathCoefficient;
-    private final double bornCoefficient;
+    private final float deathCoefficient;
+    private final float bornCoefficient;
 
     public Plant(String name, int count, float neededWet, float neededWater, float neededSun, float normalTemperature,
-                 double deathCoefficient, double bornCoefficient) {
+                 float deathCoefficient, float bornCoefficient) {
         this.name = name;
         this.count = count;
         this.neededWet = neededWet;
@@ -54,11 +52,11 @@ public class Plant {
         return normalTemperature;
     }
 
-    public double getDeathCoefficient() {
+    public float getDeathCoefficient() {
         return deathCoefficient;
     }
 
-    public double getBornCoefficient() {
+    public float getBornCoefficient() {
         return bornCoefficient;
     }
 }

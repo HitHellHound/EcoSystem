@@ -13,7 +13,8 @@ public class Ecosystem {
     private float sunLvl;
     private float temperature;
 
-    public Ecosystem(String name, List<Animal> animals, List<Plant> plants, float wetLvl, float amountOfWater, float sunLvl, float temperature) {
+    public Ecosystem(String name, List<Animal> animals, List<Plant> plants, float wetLvl,
+                     float amountOfWater, float sunLvl, float temperature) {
         this.name = name;
         this.animals = animals;
         this.plants = plants;
@@ -21,10 +22,6 @@ public class Ecosystem {
         this.amountOfWater = amountOfWater;
         this.sunLvl = sunLvl;
         this.temperature = temperature;
-    }
-
-    public void doTheEvolution() {
-
     }
 
     public String getName() {

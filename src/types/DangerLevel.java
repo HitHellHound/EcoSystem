@@ -1,24 +1,28 @@
 package types;
 
+import ecxeptions.WrongDataException;
+
+import java.util.Arrays;
+
 public enum DangerLevel {
     ONE(1),
     TWO(2),
     THREE(3),
     FOUR(4),
-    FIVE(5),
-    SIX(6),
-    SEVEN(7),
-    EIGHT(8),
-    NINE(9),
-    TEN(10);
+    FIVE(5);
 
-    private final int dngLvl;
+    private final int dngLvlInt;
 
-    DangerLevel(int dngLvl) {
-        this.dngLvl = dngLvl;
+    DangerLevel(int dngLvlInt) {
+        this.dngLvlInt = dngLvlInt;
     }
 
-    public int getDngLvl() {
-        return dngLvl;
+    public int getDngLvlInt() {
+        return dngLvlInt;
+    }
+
+    public static DangerLevel valueOfInt(int i) throws WrongDataException {
+        return Arrays.stream(DangerLevel.values()).filter(dangerLevel -> dangerLevel.dngLvlInt == i)
+                .findFirst().orElseThrow(WrongDataException::new);
     }
 }

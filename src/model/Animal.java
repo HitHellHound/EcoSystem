@@ -13,11 +13,11 @@ public class Animal {
     private final float neededWater;
     private final float normalTemperature;
 
-    private final double deathCoefficient;
-    private final double bornCoefficient;
+    private final float deathCoefficient;
+    private final float bornCoefficient;
 
     public Animal(String name, int count, DangerLevel dangerLevel, MealType mealType, int neededFood, float neededWater,
-                  float normalTemperature, double deathCoefficient, double bornCoefficient) {
+                  float normalTemperature, float deathCoefficient, float bornCoefficient) {
         this.name = name;
         this.count = count;
         this.dangerLevel = dangerLevel;
@@ -61,11 +61,11 @@ public class Animal {
         return normalTemperature;
     }
 
-    public double getDeathCoefficient() {
+    public float getDeathCoefficient() {
         return deathCoefficient;
     }
 
-    public double getBornCoefficient() {
+    public float getBornCoefficient() {
         return bornCoefficient;
     }
 }
