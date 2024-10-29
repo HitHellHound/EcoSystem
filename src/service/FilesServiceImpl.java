@@ -6,14 +6,15 @@ import model.Ecosystem;
 import model.Plant;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SaveFilesServiceImpl implements SaveFilesService {
+public class FilesServiceImpl implements FilesService {
     public static final String BASE_DATA_PATH = "BaseData/";
     public static final String SAVES_PATH = "Saves/";
+    public static final String SAVE_FILE_PREFIX = "save_";
+    public static final String SAVE_FILE_EXTENSION = ".txt";
 
     public EcosystemService ecosystemService = new EcosystemServiceImpl();
 
@@ -38,15 +39,19 @@ public class SaveFilesServiceImpl implements SaveFilesService {
                 plantData = reader.readLine();
             }
         }
+        catch (NumberFormatException ex) {
+            throw new WrongDataException("Wrong number format in file");
+        }
         catch (IOException ex) {
-
+            throw new WrongDataException("Some problems with file");
         }
         return ecosystem;
     }
 
     @Override
     public void saveEcosystem(Ecosystem ecosystem) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(SAVES_PATH + "save_" + ecosystem.getName() + ".txt"))) {
+        try (BufferedWriter writer = new BufferedWriter(
+                new FileWriter(SAVES_PATH + SAVE_FILE_PREFIX + ecosystem.getName() + SAVE_FILE_EXTENSION))) {
             StringBuilder data = createEcosystemData(ecosystem);
             writer.append(data);
         } catch (IOException e) {
@@ -58,7 +63,7 @@ public class SaveFilesServiceImpl implements SaveFilesService {
         return Stream.of(new File(SAVES_PATH).listFiles()).
                 filter(file -> !file.isDirectory())
                 .map(File::getName)
-                .filter(fileName -> fileName.startsWith("save_") && fileName.endsWith(".txt"))
+                .filter(fileName -> fileName.startsWith(SAVE_FILE_PREFIX) && fileName.endsWith(SAVE_FILE_EXTENSION))
                 .collect(Collectors.toList());
     }
 
@@ -66,7 +71,7 @@ public class SaveFilesServiceImpl implements SaveFilesService {
         String[] ecosystemDataSplitted = ecosystemData.split(" ");
 
         if (ecosystemDataSplitted.length != 5)
-            throw new WrongDataException();
+            throw new WrongDataException("Wrong ecosystem data");
 
         String name = ecosystemDataSplitted[0];
         float wetLvl = Float.parseFloat(ecosystemDataSplitted[1]);
@@ -81,7 +86,7 @@ public class SaveFilesServiceImpl implements SaveFilesService {
         String[] animalDataSplitted = animalData.split(" ");
 
         if (animalDataSplitted.length != 9)
-            throw new WrongDataException();
+            throw new WrongDataException("Wrong animal data");
 
         String name = animalDataSplitted[0];
         int count = Integer.parseInt(animalDataSplitted[1]);
@@ -101,7 +106,7 @@ public class SaveFilesServiceImpl implements SaveFilesService {
         String[] plantDataSplitted = plantData.split(" ");
 
         if (plantDataSplitted.length != 8)
-            throw new WrongDataException();
+            throw new WrongDataException("Wrong plant data");
 
         String name = plantDataSplitted[0];
         int count = Integer.parseInt(plantDataSplitted[1]);

@@ -23,7 +23,7 @@ public class EcosystemServiceImpl implements EcosystemService {
 
             return new Ecosystem(name, animals, plants, wetLvl, amountOfWater, sunLvl, temperature);
         } else {
-            throw new WrongDataException();
+            throw new WrongDataException("Can't create ecosystem " + name);
         }
     }
 
@@ -36,7 +36,7 @@ public class EcosystemServiceImpl implements EcosystemService {
                     neededFood, neededWater, normalTemperature, deathCoefficient, bornCoefficient);
             ecosystem.getAnimals().add(animal);
         } else {
-            throw new WrongDataException();
+            throw new WrongDataException("Can't create animal " + name);
         }
     }
 
@@ -50,7 +50,7 @@ public class EcosystemServiceImpl implements EcosystemService {
                     deathCoefficient, bornCoefficient);
             ecosystem.getPlants().add(plant);
         } else {
-            throw new WrongDataException();
+            throw new WrongDataException("Can't create plant " + name);
         }
     }
 }

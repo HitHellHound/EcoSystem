@@ -23,6 +23,6 @@ public enum DangerLevel {
 
     public static DangerLevel valueOfInt(int i) throws WrongDataException {
         return Arrays.stream(DangerLevel.values()).filter(dangerLevel -> dangerLevel.dngLvlInt == i)
-                .findFirst().orElseThrow(WrongDataException::new);
+                .findFirst().orElseThrow(() -> new WrongDataException("No such Danger Level for " + i));
     }
 }

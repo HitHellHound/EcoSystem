@@ -21,6 +21,6 @@ public enum MealType {
 
     public static MealType valueOfInt(int i) throws WrongDataException {
         return Arrays.stream(MealType.values()).filter(mealType -> mealType.mealTypeInt == i)
-                .findFirst().orElseThrow(WrongDataException::new);
+                .findFirst().orElseThrow(() -> new WrongDataException("No such Meal Type for " + i));
     }
 }

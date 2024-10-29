@@ -3,7 +3,10 @@ package service;
 import ecxeptions.WrongDataException;
 import model.Ecosystem;
 
-public interface SaveFilesService {
+import java.util.List;
+
+public interface FilesService {
     Ecosystem loadEcosystem(String fileName) throws WrongDataException;
     void saveEcosystem(Ecosystem ecosystem);
+    List<String> getSaveFiles();
 }
