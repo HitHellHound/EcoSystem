@@ -11,8 +11,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FilesServiceImpl implements FilesService {
-    public static final String BASE_DATA_PATH = "BaseData/";
-    public static final String SAVES_PATH = "Saves/";
+    public static final String ANIMALS_BASE_DATA = "baseData/animals.txt";
+    public static final String PLANTS_BASE_DATA = "baseData/plants.txt";
+    public static final String SAVES_PATH = "saves/";
     public static final String SAVE_FILE_PREFIX = "save_";
     public static final String SAVE_FILE_EXTENSION = ".txt";
 
@@ -59,12 +60,38 @@ public class FilesServiceImpl implements FilesService {
         }
     }
 
+    @Override
     public List<String> getSaveFiles() {
         return Stream.of(new File(SAVES_PATH).listFiles()).
                 filter(file -> !file.isDirectory())
                 .map(File::getName)
                 .filter(fileName -> fileName.startsWith(SAVE_FILE_PREFIX) && fileName.endsWith(SAVE_FILE_EXTENSION))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void loadBaseAnimalsAndPlants(Ecosystem ecosystem) throws WrongDataException {
+        try (BufferedReader animalReader = new BufferedReader(new FileReader(ANIMALS_BASE_DATA));
+                BufferedReader plantsReader = new BufferedReader(new FileReader(PLANTS_BASE_DATA))) {
+
+            String animalData = animalReader.readLine();
+            while (animalData != null && !animalData.isEmpty()){
+                buildAndAddAnimal(ecosystem, animalData);
+                animalData = animalReader.readLine();
+            }
+
+            String plantData = plantsReader.readLine();
+            while (plantData != null && !plantData.isEmpty()){
+                buildAndAddPlant(ecosystem, plantData);
+                plantData = plantsReader.readLine();
+            }
+        }
+        catch (NumberFormatException ex) {
+            throw new WrongDataException("Wrong number format in files");
+        }
+        catch (IOException ex) {
+            throw new WrongDataException("Some problems with files");
+        }
     }
 
     private Ecosystem buildEcosystem(String ecosystemData) throws WrongDataException {
@@ -74,12 +101,12 @@ public class FilesServiceImpl implements FilesService {
             throw new WrongDataException("Wrong ecosystem data");
 
         String name = ecosystemDataSplitted[0];
-        float wetLvl = Float.parseFloat(ecosystemDataSplitted[1]);
+        float humidity = Float.parseFloat(ecosystemDataSplitted[1]);
         float amountOfWater = Float.parseFloat(ecosystemDataSplitted[2]);
-        float sunLvl = Float.parseFloat(ecosystemDataSplitted[3]);
+        float sunshine = Float.parseFloat(ecosystemDataSplitted[3]);
         float temperature = Float.parseFloat(ecosystemDataSplitted[4]);
 
-        return ecosystemService.createEcosystem(name, wetLvl, amountOfWater, sunLvl, temperature);
+        return ecosystemService.createEcosystem(name, humidity, amountOfWater, sunshine, temperature);
     }
 
     private void buildAndAddAnimal(Ecosystem ecosystem, String animalData) throws WrongDataException {
@@ -110,23 +137,23 @@ public class FilesServiceImpl implements FilesService {
 
         String name = plantDataSplitted[0];
         int count = Integer.parseInt(plantDataSplitted[1]);
-        float neededWet = Float.parseFloat(plantDataSplitted[2]);
+        float neededHumidity = Float.parseFloat(plantDataSplitted[2]);
         float neededWater = Float.parseFloat(plantDataSplitted[3]);
-        float neededSun = Float.parseFloat(plantDataSplitted[4]);
+        float neededSunshine = Float.parseFloat(plantDataSplitted[4]);
         float normalTemperature = Float.parseFloat(plantDataSplitted[5]);
         float deathCoefficient = Float.parseFloat(plantDataSplitted[6]);
         float bornCoefficient = Float.parseFloat(plantDataSplitted[7]);
 
-        ecosystemService.createAndAddPlant(ecosystem, name, count, neededWet, neededWater, neededSun, normalTemperature,
+        ecosystemService.createAndAddPlant(ecosystem, name, count, neededHumidity, neededWater, neededSunshine, normalTemperature,
                 deathCoefficient, bornCoefficient);
     }
 
     private StringBuilder createEcosystemData(Ecosystem ecosystem) {
         StringBuilder data = new StringBuilder();
         data.append(ecosystem.getName()).append(" ")
-                .append(ecosystem.getWetLvl()).append(" ")
+                .append(ecosystem.getHumidity()).append(" ")
                 .append(ecosystem.getAmountOfWater()).append(" ")
-                .append(ecosystem.getSunLvl()).append(" ")
+                .append(ecosystem.getSunshine()).append(" ")
                 .append(ecosystem.getTemperature()).append("\n\n");
 
         for (Animal animal : ecosystem.getAnimals())
@@ -144,9 +171,9 @@ public class FilesServiceImpl implements FilesService {
         for (Plant plant : ecosystem.getPlants())
             data.append(plant.getName()).append(" ")
                     .append(plant.getCount()).append(" ")
-                    .append(plant.getNeededWet()).append(" ")
+                    .append(plant.getNeededHumidity()).append(" ")
                     .append(plant.getNeededWater()).append(" ")
-                    .append(plant.getNeededSun()).append(" ")
+                    .append(plant.getNeededSunshine()).append(" ")
                     .append(plant.getNormalTemperature()).append(" ")
                     .append(plant.getDeathCoefficient()).append(" ")
                     .append(plant.getBornCoefficient()).append("\n");

@@ -2,6 +2,8 @@ package console;
 
 import ecxeptions.WrongDataException;
 import model.Ecosystem;
+import service.EcosystemService;
+import service.EcosystemServiceImpl;
 import service.FilesService;
 import service.FilesServiceImpl;
 
@@ -9,17 +11,19 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MainMenuConsole {
+    private final EcosystemService ecosystemService;
     private final FilesService filesService;
     private final Scanner console;
 
     public static void main(String[] args) {
-        Scanner console = new Scanner(System.in);
-        FilesService filesService = new FilesServiceImpl();
-        MainMenuConsole mainMenuConsole = new MainMenuConsole(filesService, console);
+        MainMenuConsole mainMenuConsole = new MainMenuConsole(new EcosystemServiceImpl(),
+                new FilesServiceImpl(),
+                new Scanner(System.in));
         mainMenuConsole.mainMenu();
     }
 
-    public MainMenuConsole(FilesService filesService, Scanner console) {
+    public MainMenuConsole(EcosystemService ecosystemService, FilesService filesService, Scanner console) {
+        this.ecosystemService = ecosystemService;
         this.filesService = filesService;
         this.console = console;
     }
@@ -48,7 +52,7 @@ public class MainMenuConsole {
                 }
             } else {
                 System.out.println("Enter an option number!");
-                console.nextLine();
+                console.next();
             }
 
             if (optionNumber <= 1)
@@ -67,9 +71,15 @@ public class MainMenuConsole {
         if (optionNumber == 0)
             return;
 
-        EcosystemMenuConsole ecosystemMenu = new EcosystemMenuConsole(console);
-        if (optionNumber == 1)
-            choosedEcosystem = ecosystemMenu.createEcosystemMenu();
+        EcosystemMenuConsole ecosystemMenu = new EcosystemMenuConsole(ecosystemService, filesService, console);
+        if (optionNumber == 1) {
+            try {
+                choosedEcosystem = ecosystemMenu.createEcosystemMenu();
+            } catch (WrongDataException exception) {
+                System.out.println("Can't create ecosystem: " + exception.getMessage());
+            }
+        }
+
         if (choosedEcosystem != null)
             ecosystemMenu.ecosystemMenu(choosedEcosystem);
     }

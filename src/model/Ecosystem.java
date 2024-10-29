@@ -8,19 +8,19 @@ public class Ecosystem {
     private List<Animal> animals;
     private List<Plant> plants;
 
-    private float wetLvl;
+    private float humidity;
     private float amountOfWater;
-    private float sunLvl;
+    private float sunshine;
     private float temperature;
 
-    public Ecosystem(String name, List<Animal> animals, List<Plant> plants, float wetLvl,
-                     float amountOfWater, float sunLvl, float temperature) {
+    public Ecosystem(String name, List<Animal> animals, List<Plant> plants, float humidity,
+                     float amountOfWater, float sunshine, float temperature) {
         this.name = name;
         this.animals = animals;
         this.plants = plants;
-        this.wetLvl = wetLvl;
+        this.humidity = humidity;
         this.amountOfWater = amountOfWater;
-        this.sunLvl = sunLvl;
+        this.sunshine = sunshine;
         this.temperature = temperature;
     }
 
@@ -44,12 +44,12 @@ public class Ecosystem {
         this.plants = plants;
     }
 
-    public float getWetLvl() {
-        return wetLvl;
+    public float getHumidity() {
+        return humidity;
     }
 
-    public void setWetLvl(float wetLvl) {
-        this.wetLvl = wetLvl;
+    public void setHumidity(float humidity) {
+        this.humidity = humidity;
     }
 
     public float getAmountOfWater() {
@@ -60,12 +60,12 @@ public class Ecosystem {
         this.amountOfWater = amountOfWater;
     }
 
-    public float getSunLvl() {
-        return sunLvl;
+    public float getSunshine() {
+        return sunshine;
     }
 
-    public void setSunLvl(float sunLvl) {
-        this.sunLvl = sunLvl;
+    public void setSunshine(float sunshine) {
+        this.sunshine = sunshine;
     }
 
     public float getTemperature() {

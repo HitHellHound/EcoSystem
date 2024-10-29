@@ -4,21 +4,21 @@ public class Plant {
     private final String name;
     private int count;
 
-    private final float neededWet;
+    private final float neededHumidity;
     private final float neededWater;
-    private final float neededSun;
+    private final float neededSunshine;
     private final float normalTemperature;
 
     private final float deathCoefficient;
     private final float bornCoefficient;
 
-    public Plant(String name, int count, float neededWet, float neededWater, float neededSun, float normalTemperature,
+    public Plant(String name, int count, float neededHumidity, float neededWater, float neededSunshine, float normalTemperature,
                  float deathCoefficient, float bornCoefficient) {
         this.name = name;
         this.count = count;
-        this.neededWet = neededWet;
+        this.neededHumidity = neededHumidity;
         this.neededWater = neededWater;
-        this.neededSun = neededSun;
+        this.neededSunshine = neededSunshine;
         this.normalTemperature = normalTemperature;
         this.deathCoefficient = deathCoefficient;
         this.bornCoefficient = bornCoefficient;
@@ -36,16 +36,16 @@ public class Plant {
         this.count = count;
     }
 
-    public float getNeededWet() {
-        return neededWet;
+    public float getNeededHumidity() {
+        return neededHumidity;
     }
 
     public float getNeededWater() {
         return neededWater;
     }
 
-    public float getNeededSun() {
-        return neededSun;
+    public float getNeededSunshine() {
+        return neededSunshine;
     }
 
     public float getNormalTemperature() {

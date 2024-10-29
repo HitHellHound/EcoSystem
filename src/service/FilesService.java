@@ -9,4 +9,5 @@ public interface FilesService {
     Ecosystem loadEcosystem(String fileName) throws WrongDataException;
     void saveEcosystem(Ecosystem ecosystem);
     List<String> getSaveFiles();
+    void loadBaseAnimalsAndPlants(Ecosystem ecosystem) throws WrongDataException;
 }

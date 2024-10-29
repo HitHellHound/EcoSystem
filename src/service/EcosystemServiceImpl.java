@@ -12,16 +12,16 @@ import java.util.List;
 
 public class EcosystemServiceImpl implements EcosystemService {
 
-    public Ecosystem createEcosystem(String name, float wetLvl,
-                                     float amountOfWater, float sunLvl, float temperature) throws WrongDataException {
-        if (wetLvl < 1.00 && wetLvl >= 0.00
+    public Ecosystem createEcosystem(String name, float humidity,
+                                     float amountOfWater, float sunshine, float temperature) throws WrongDataException {
+        if (humidity < 1.00 && humidity >= 0.00
                 && amountOfWater > 0
-                && sunLvl >= 0.00 && sunLvl <= 1.00){
+                && sunshine >= 0.00 && sunshine <= 1.00){
 
             List<Animal> animals = new ArrayList<>();
             List<Plant> plants = new ArrayList<>();
 
-            return new Ecosystem(name, animals, plants, wetLvl, amountOfWater, sunLvl, temperature);
+            return new Ecosystem(name, animals, plants, humidity, amountOfWater, sunshine, temperature);
         } else {
             throw new WrongDataException("Can't create ecosystem " + name);
         }
@@ -40,13 +40,13 @@ public class EcosystemServiceImpl implements EcosystemService {
         }
     }
 
-    public void createAndAddPlant(Ecosystem ecosystem, String name, int count, float neededWet, float neededWater,
-                                  float neededSun, float normalTemperature,
+    public void createAndAddPlant(Ecosystem ecosystem, String name, int count, float neededHumidity, float neededWater,
+                                  float neededSunshine, float normalTemperature,
                                   float deathCoefficient, float bornCoefficient)  throws WrongDataException {
-        if (count >= 0 && neededWet >= 0.00 && neededWet < 1.00 && neededWater > 0
-                && neededSun > 0.00 && neededSun < 1.00 && deathCoefficient > 0.00 && deathCoefficient < 1.00
+        if (count >= 0 && neededHumidity >= 0.00 && neededHumidity < 1.00 && neededWater > 0
+                && neededSunshine > 0.00 && neededSunshine < 1.00 && deathCoefficient > 0.00 && deathCoefficient < 1.00
                 && bornCoefficient > 0.00 && bornCoefficient < 1.00) {
-            Plant plant = new Plant(name, count, neededWet, neededWater, neededSun, normalTemperature,
+            Plant plant = new Plant(name, count, neededHumidity, neededWater, neededSunshine, normalTemperature,
                     deathCoefficient, bornCoefficient);
             ecosystem.getPlants().add(plant);
         } else {
