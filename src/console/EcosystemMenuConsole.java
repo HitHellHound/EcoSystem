@@ -3,10 +3,12 @@ package console;
 import ecxeptions.FileServiceException;
 import ecxeptions.WrongDataException;
 import model.Ecosystem;
+import model.Entity;
 import service.EcosystemService;
 import service.FilesService;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 import static console.MenuOptions.*;
@@ -52,13 +54,11 @@ public class EcosystemMenuConsole {
             System.out.println(SHORT_STATISTIC + ". Get short statistic");
             System.out.println(FULL_STATISTIC + ". Get full statistic");
             System.out.println(ECOSYSTEM_PARAMS + ". Change ecosystem parameters");
-            System.out.println(ENTITIES_COUNT + ". Change entities count");
+            System.out.println(ENTITIES + ". Change entities");
             System.out.println(SAVE + ". Save ecosystem");
             System.out.println(EXIT + ". Go back");
 
-            int optionNumber = chooseOption(SAVE);
-
-            switch (optionNumber) {
+            switch (chooseOption(SAVE)) {
                 case EXIT:
                     return;
                 case SHORT_STATISTIC:
@@ -71,6 +71,9 @@ public class EcosystemMenuConsole {
                     break;
                 case ECOSYSTEM_PARAMS:
                     changeEcosystemParamsMenu(ecosystem);
+                    break;
+                case ENTITIES:
+                    changeEntities(ecosystem);
                     break;
                 case SAVE:
                     try {
@@ -91,9 +94,7 @@ public class EcosystemMenuConsole {
         System.out.println(TEMPERATURE + ". Temperature");
         System.out.println(EXIT + ". Go back");
 
-        int optionNumber = chooseOption(TEMPERATURE);
-
-        switch (optionNumber) {
+        switch (chooseOption(TEMPERATURE)) {
             case EXIT:
                 return;
             case HUMIDITY:
@@ -116,8 +117,57 @@ public class EcosystemMenuConsole {
         System.out.println("Parameter changed.\n");
     }
 
-    private void changeEntitiesCount(Ecosystem ecosystem){
-        
+    private void changeEntities(Ecosystem ecosystem){
+        System.out.println("What type of entities you want to change?");
+        System.out.println(ANIMALS + ". Animals");
+        System.out.println(PLANTS + ". Plants");
+        System.out.println(EXIT + ". Cancel");
+
+        List<? extends Entity> entities;
+
+        switch (chooseOption(PLANTS)) {
+            case ANIMALS:
+                entities = ecosystem.getAnimals();
+                System.out.println("Choose animal to change: ");
+                break;
+            case PLANTS:
+                entities = ecosystem.getPlants();
+                System.out.println("Choose plant to change: ");
+                break;
+            default:
+                return;
+        }
+
+        for(int i = 0; i < entities.size(); i++) {
+            System.out.println((i + 1) + ". " + entities.get(i).getName());
+        }
+        System.out.println(EXIT + ". Cancel");
+
+        int chosenOption = chooseOption(entities.size() + 1);
+
+        if (chosenOption != 0) {
+            Entity entity = entities.get(chosenOption - 1);
+
+            System.out.println("What you want ro do?");
+            System.out.println(DELETE + ". Delete " + entity.getName() + " from ecosystem");
+            System.out.println(CHANGE_COUNT + ". Change count for " + entity.getName());
+            System.out.println(EXIT + ". Cancel");
+
+            switch (chooseOption(CHANGE_COUNT)) {
+                case DELETE:
+                    System.out.println("Are you sure you want to delete " + entity.getName() + " from ecosystem? (y/n)");
+                    if (requireYesOrNo()) {
+                        entities.remove(entity);
+                        System.out.println(entity.getName() + " has removed from ecosystem.");
+                    }
+                    break;
+                case CHANGE_COUNT:
+                    System.out.println(CHANGE_COUNT + ". Change count for " + entity.getName() + ":");
+                    entity.setCount(requireNonNegativeInt());
+                    System.out.println("Count for " + entity.getName() + "has changed!\n");
+                    break;
+            }
+        }
     }
 
     private int chooseOption(int lastOption) {
