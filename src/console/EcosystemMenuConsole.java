@@ -9,9 +9,9 @@ import service.FilesService;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class EcosystemMenuConsole {
-    private final static int NUMBER_OF_OPTIONS_IN_ECOSYS_MENU = 6;
+import static console.MenuOptions.*;
 
+public class EcosystemMenuConsole {
     private final EcosystemService ecosystemService;
     private final FilesService filesService;
     private final Scanner console;
@@ -41,56 +41,102 @@ public class EcosystemMenuConsole {
         if (requireYesOrNo())
             filesService.loadBaseAnimalsAndPlants(ecosystem);
 
+        System.out.println("Ecosystem created!");
+
         return ecosystem;
     }
 
     public void ecosystemMenu(Ecosystem ecosystem) {
         while (true) {
             System.out.println("Ecosystem: " + ecosystem.getName() + ". Chose option: ");
-            System.out.println("1. Get short statistic");
-            System.out.println("2. Get full statistic");
-            System.out.println("3. Change ecosystem parameters");
-            System.out.println("4. Change animals");
-            System.out.println("5. Change plants");
-            System.out.println(NUMBER_OF_OPTIONS_IN_ECOSYS_MENU + ". Save ecosystem");
-            System.out.println("0. Go back");
+            System.out.println(SHORT_STATISTIC + ". Get short statistic");
+            System.out.println(FULL_STATISTIC + ". Get full statistic");
+            System.out.println(ECOSYSTEM_PARAMS + ". Change ecosystem parameters");
+            System.out.println(ENTITIES_COUNT + ". Change entities count");
+            System.out.println(SAVE + ". Save ecosystem");
+            System.out.println(EXIT + ". Go back");
 
-            int optionNumber;
-            while (true) {
-                if (console.hasNextInt()) {
-                    optionNumber = console.nextInt();
-                    if (optionNumber > NUMBER_OF_OPTIONS_IN_ECOSYS_MENU || optionNumber < 0) {
-                        System.out.println("Incorrect option number!");
-                        continue;
-                    }
-                } else {
-                    System.out.println("Enter an option number!");
-                    console.next();
-                    continue;
-                }
-                break;
-            }
+            int optionNumber = chooseOption(SAVE);
 
             switch (optionNumber) {
-                case 0:
+                case EXIT:
                     return;
-                case 1:
+                case SHORT_STATISTIC:
                     System.out.println(ecosystemService.createEcosystemShortStatistic(ecosystem));
                     pressEnterToContinue();
                     break;
-                case 2:
+                case FULL_STATISTIC:
                     System.out.println(ecosystemService.createEcosystemFullStatistic(ecosystem));
                     pressEnterToContinue();
                     break;
-                case 6:
+                case ECOSYSTEM_PARAMS:
+                    changeEcosystemParamsMenu(ecosystem);
+                    break;
+                case SAVE:
                     try {
                         filesService.saveEcosystem(ecosystem);
                         System.out.println("Successfully saved!");
                     } catch (FileServiceException e) {
-                        System.out.println("Something went wrong while saving. Try again later...");
+                        System.out.println("Something went wrong while saving. Try again later...\n");
                     }
             }
         }
+    }
+
+    private void changeEcosystemParamsMenu(Ecosystem ecosystem) {
+        System.out.println("Ecosystem: " + ecosystem.getName() + ". Chose parameter to change: ");
+        System.out.println(HUMIDITY + ". Humidity");
+        System.out.println(AMOUNT_OF_WATER + ". Amount of Water");
+        System.out.println(SUNSHINE + ". Sunshine");
+        System.out.println(TEMPERATURE + ". Temperature");
+        System.out.println(EXIT + ". Go back");
+
+        int optionNumber = chooseOption(TEMPERATURE);
+
+        switch (optionNumber) {
+            case EXIT:
+                return;
+            case HUMIDITY:
+                System.out.print("Enter new humidity (from 0.00 to 1.00): ");
+                ecosystem.setHumidity(requireNormalizedValue());
+                break;
+            case AMOUNT_OF_WATER:
+                System.out.print("Enter new amount of water(non negative): ");
+                ecosystem.setAmountOfWater(requireNonNegativeFloat());
+                break;
+            case SUNSHINE:
+                System.out.print("Enter new sunshine (from 0.00 to 1.00): ");
+                ecosystem.setSunshine(requireNormalizedValue());
+                break;
+            case TEMPERATURE:
+                System.out.print("Enter new temperature: ");
+                ecosystem.setTemperature(requireFloat());
+                break;
+        }
+        System.out.println("Parameter changed.\n");
+    }
+
+    private void changeEntitiesCount(Ecosystem ecosystem){
+        
+    }
+
+    private int chooseOption(int lastOption) {
+        int optionNumber;
+        while (true) {
+            if (console.hasNextInt()) {
+                optionNumber = console.nextInt();
+                if (optionNumber > lastOption || optionNumber < 0) {
+                    System.out.println("Incorrect option number!");
+                    continue;
+                }
+            } else {
+                System.out.println("Enter an option number!");
+                console.next();
+                continue;
+            }
+            break;
+        }
+        return optionNumber;
     }
 
     private void pressEnterToContinue() {
