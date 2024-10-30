@@ -1,9 +1,6 @@
 package model;
 
-public class Plant {
-    private final String name;
-    private int count;
-
+public class Plant extends Entity {
     private final float neededHumidity;
     private final float neededWater;
     private final float neededSunshine;
@@ -14,26 +11,13 @@ public class Plant {
 
     public Plant(String name, int count, float neededHumidity, float neededWater, float neededSunshine, float normalTemperature,
                  float deathCoefficient, float bornCoefficient) {
-        this.name = name;
-        this.count = count;
+        super(name, count);
         this.neededHumidity = neededHumidity;
         this.neededWater = neededWater;
         this.neededSunshine = neededSunshine;
         this.normalTemperature = normalTemperature;
         this.deathCoefficient = deathCoefficient;
         this.bornCoefficient = bornCoefficient;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
     }
 
     public float getNeededHumidity() {

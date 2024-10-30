@@ -3,11 +3,8 @@ package model;
 import types.DangerLevel;
 import types.MealType;
 
-public class Animal {
-    private final String name;
-    private int count;
+public class Animal extends Entity {
     private final DangerLevel dangerLevel;
-
     private final MealType mealType;
     private final int neededFood;
     private final float neededWater;
@@ -18,8 +15,7 @@ public class Animal {
 
     public Animal(String name, int count, DangerLevel dangerLevel, MealType mealType, int neededFood, float neededWater,
                   float normalTemperature, float deathCoefficient, float bornCoefficient) {
-        this.name = name;
-        this.count = count;
+        super(name, count);
         this.dangerLevel = dangerLevel;
         this.mealType = mealType;
         this.neededFood = neededFood;
@@ -27,18 +23,6 @@ public class Animal {
         this.normalTemperature = normalTemperature;
         this.deathCoefficient = deathCoefficient;
         this.bornCoefficient = bornCoefficient;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
     }
 
     public DangerLevel getDangerLevel() {
