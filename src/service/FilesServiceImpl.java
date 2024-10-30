@@ -1,9 +1,8 @@
 package service;
 
+import ecxeptions.FileServiceException;
 import ecxeptions.WrongDataException;
-import model.Animal;
 import model.Ecosystem;
-import model.Plant;
 
 import java.io.*;
 import java.util.List;
@@ -50,13 +49,13 @@ public class FilesServiceImpl implements FilesService {
     }
 
     @Override
-    public void saveEcosystem(Ecosystem ecosystem) {
+    public void saveEcosystem(Ecosystem ecosystem) throws FileServiceException {
         try (BufferedWriter writer = new BufferedWriter(
                 new FileWriter(SAVES_PATH + SAVE_FILE_PREFIX + ecosystem.getName() + SAVE_FILE_EXTENSION))) {
-            StringBuilder data = createEcosystemData(ecosystem);
+            String data = ecosystemService.createEcosystemFullData(ecosystem);
             writer.append(data);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new FileServiceException();
         }
     }
 
@@ -146,38 +145,5 @@ public class FilesServiceImpl implements FilesService {
 
         ecosystemService.createAndAddPlant(ecosystem, name, count, neededHumidity, neededWater, neededSunshine, normalTemperature,
                 deathCoefficient, bornCoefficient);
-    }
-
-    private StringBuilder createEcosystemData(Ecosystem ecosystem) {
-        StringBuilder data = new StringBuilder();
-        data.append(ecosystem.getName()).append(" ")
-                .append(ecosystem.getHumidity()).append(" ")
-                .append(ecosystem.getAmountOfWater()).append(" ")
-                .append(ecosystem.getSunshine()).append(" ")
-                .append(ecosystem.getTemperature()).append("\n\n");
-
-        for (Animal animal : ecosystem.getAnimals())
-            data.append(animal.getName()).append(" ")
-                    .append(animal.getCount()).append(" ")
-                    .append(animal.getDangerLevel().getDngLvlInt()).append(" ")
-                    .append(animal.getMealType().getMealTypeInt()).append(" ")
-                    .append(animal.getNeededFood()).append(" ")
-                    .append(animal.getNeededWater()).append(" ")
-                    .append(animal.getNormalTemperature()).append(" ")
-                    .append(animal.getDeathCoefficient()).append(" ")
-                    .append(animal.getBornCoefficient()).append("\n");
-        data.append("\n");
-
-        for (Plant plant : ecosystem.getPlants())
-            data.append(plant.getName()).append(" ")
-                    .append(plant.getCount()).append(" ")
-                    .append(plant.getNeededHumidity()).append(" ")
-                    .append(plant.getNeededWater()).append(" ")
-                    .append(plant.getNeededSunshine()).append(" ")
-                    .append(plant.getNormalTemperature()).append(" ")
-                    .append(plant.getDeathCoefficient()).append(" ")
-                    .append(plant.getBornCoefficient()).append("\n");
-
-        return data;
     }
 }

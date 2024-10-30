@@ -1,13 +1,17 @@
 package console;
 
+import ecxeptions.FileServiceException;
 import ecxeptions.WrongDataException;
 import model.Ecosystem;
 import service.EcosystemService;
 import service.FilesService;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class EcosystemMenuConsole {
+    private final static int NUMBER_OF_OPTIONS_IN_ECOSYS_MENU = 6;
+
     private final EcosystemService ecosystemService;
     private final FilesService filesService;
     private final Scanner console;
@@ -41,9 +45,64 @@ public class EcosystemMenuConsole {
     }
 
     public void ecosystemMenu(Ecosystem ecosystem) {
-        System.out.println("Ecosystem: ");
-        System.out.println(ecosystem.getName());
-        System.out.println(ecosystem);
+        while (true) {
+            System.out.println("Ecosystem: " + ecosystem.getName() + ". Chose option: ");
+            System.out.println("1. Get short statistic");
+            System.out.println("2. Get full statistic");
+            System.out.println("3. Change ecosystem parameters");
+            System.out.println("4. Change animals");
+            System.out.println("5. Change plants");
+            System.out.println(NUMBER_OF_OPTIONS_IN_ECOSYS_MENU + ". Save ecosystem");
+            System.out.println("0. Go back");
+
+            int optionNumber;
+            while (true) {
+                if (console.hasNextInt()) {
+                    optionNumber = console.nextInt();
+                    if (optionNumber > NUMBER_OF_OPTIONS_IN_ECOSYS_MENU || optionNumber < 0) {
+                        System.out.println("Incorrect option number!");
+                        continue;
+                    }
+                } else {
+                    System.out.println("Enter an option number!");
+                    console.next();
+                    continue;
+                }
+                break;
+            }
+
+            switch (optionNumber) {
+                case 0:
+                    return;
+                case 1:
+                    System.out.println(ecosystemService.createEcosystemShortStatistic(ecosystem));
+                    pressEnterToContinue();
+                    break;
+                case 2:
+                    System.out.println(ecosystemService.createEcosystemFullStatistic(ecosystem));
+                    pressEnterToContinue();
+                    break;
+                case 6:
+                    try {
+                        filesService.saveEcosystem(ecosystem);
+                        System.out.println("Successfully saved!");
+                    } catch (FileServiceException e) {
+                        System.out.println("Something went wrong while saving. Try again later...");
+                    }
+            }
+        }
+    }
+
+    private void pressEnterToContinue() {
+        System.out.println("Press Enter key to continue...");
+        try {
+            System.in.read();
+            String garbage = console.nextLine();
+            if (garbage != null && !garbage.isEmpty())
+                console.nextLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private int requireNonNegativeInt() {

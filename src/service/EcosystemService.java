@@ -14,4 +14,10 @@ public interface EcosystemService {
     void createAndAddPlant(Ecosystem ecosystem, String name, int count, float neededHumidity, float neededWater,
                                   float neededSunshine, float normalTemperature,
                                   float deathCoefficient, float bornCoefficient)  throws WrongDataException;
+
+    String createEcosystemShortStatistic(Ecosystem ecosystem);
+
+    String createEcosystemFullStatistic(Ecosystem ecosystem);
+
+    String createEcosystemFullData(Ecosystem ecosystem);
 }

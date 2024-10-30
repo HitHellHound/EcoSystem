@@ -30,57 +30,56 @@ public class MainMenuConsole {
 
     public void mainMenu() {
         List<String> saveFiles = filesService.getSaveFiles();
-
-        System.out.println("Choose save or create new Ecosystem:");
-        int optionCounter = 1;
-        System.out.println(optionCounter + ". Create new Ecosystem");
-        for (String saveFile : saveFiles){
-            optionCounter++;
-            System.out.println(optionCounter + ". " + saveFile.subSequence(FilesServiceImpl.SAVE_FILE_PREFIX.length(),
-                    saveFile.length() - FilesServiceImpl.SAVE_FILE_EXTENSION.length()));
-        }
-        System.out.println("0. Close application");
-
-        int optionNumber = 0;
-        Ecosystem choosedEcosystem = null;
         while (true) {
-            if (console.hasNextInt()){
-                optionNumber = console.nextInt();
-                if (optionNumber > saveFiles.size() + 1 || optionNumber < 0) {
-                    System.out.println("Incorrect option number!");
+            System.out.println("Choose save or create new Ecosystem:");
+            System.out.println("1. Create new Ecosystem");
+            for (int i = 0; i < saveFiles.size(); i++)
+                System.out.println((i + 2) + ". " + saveFiles.get(i).subSequence(FilesServiceImpl.SAVE_FILE_PREFIX.length(),
+                        saveFiles.get(i).length() - FilesServiceImpl.SAVE_FILE_EXTENSION.length()));
+            System.out.println("0. Close application");
+
+            int optionNumber = 0;
+            Ecosystem choosedEcosystem = null;
+            while (true) {
+                if (console.hasNextInt()) {
+                    optionNumber = console.nextInt();
+                    if (optionNumber > saveFiles.size() + 1 || optionNumber < 0) {
+                        System.out.println("Incorrect option number!");
+                        continue;
+                    }
+                } else {
+                    System.out.println("Enter an option number!");
+                    console.next();
                     continue;
                 }
-            } else {
-                System.out.println("Enter an option number!");
-                console.next();
-            }
 
-            if (optionNumber <= 1)
-                break;
-            else {
-                try {
-                    choosedEcosystem = filesService.loadEcosystem(saveFiles.get(optionNumber - 2));
+                if (optionNumber <= 1)
                     break;
-                } catch (WrongDataException exception) {
-                    System.out.println("Can't load this save: " + exception.getMessage() + "\n" +
-                            "Try another one");
+                else {
+                    try {
+                        choosedEcosystem = filesService.loadEcosystem(saveFiles.get(optionNumber - 2));
+                        break;
+                    } catch (WrongDataException exception) {
+                        System.out.println("Can't load this save: " + exception.getMessage() + "\n" +
+                                "Try another one");
+                    }
                 }
             }
-        }
 
-        if (optionNumber == 0)
-            return;
+            if (optionNumber == 0)
+                return;
 
-        EcosystemMenuConsole ecosystemMenu = new EcosystemMenuConsole(ecosystemService, filesService, console);
-        if (optionNumber == 1) {
-            try {
-                choosedEcosystem = ecosystemMenu.createEcosystemMenu();
-            } catch (WrongDataException exception) {
-                System.out.println("Can't create ecosystem: " + exception.getMessage());
+            EcosystemMenuConsole ecosystemMenu = new EcosystemMenuConsole(ecosystemService, filesService, console);
+            if (optionNumber == 1) {
+                try {
+                    choosedEcosystem = ecosystemMenu.createEcosystemMenu();
+                } catch (WrongDataException exception) {
+                    System.out.println("Can't create ecosystem: " + exception.getMessage());
+                }
             }
-        }
 
-        if (choosedEcosystem != null)
-            ecosystemMenu.ecosystemMenu(choosedEcosystem);
+            if (choosedEcosystem != null)
+                ecosystemMenu.ecosystemMenu(choosedEcosystem);
+        }
     }
 }
