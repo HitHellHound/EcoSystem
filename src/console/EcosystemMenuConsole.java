@@ -28,11 +28,11 @@ public class EcosystemMenuConsole {
         System.out.println("Creating new Ecosystem!");
         System.out.print("Enter name: ");
         String name = console.next();
-        System.out.print("Enter humidity (from 0.00 to 1.00): ");
+        System.out.print("Enter humidity (from 0,00 to 1,00): ");
         float humidity = requireNormalizedValue();
         System.out.print("Enter amount of water(non negative): ");
         float amountOfWater = requireNonNegativeFloat();
-        System.out.print("Enter sunshine (from 0.00 to 1.00): ");
+        System.out.print("Enter sunshine (from 0,00 to 1,00): ");
         float sunshine = requireNormalizedValue();
         System.out.print("Enter temperature: ");
         float temperature = requireFloat();
@@ -54,7 +54,8 @@ public class EcosystemMenuConsole {
             System.out.println(SHORT_STATISTIC + ". Get short statistic");
             System.out.println(FULL_STATISTIC + ". Get full statistic");
             System.out.println(ECOSYSTEM_PARAMS + ". Change ecosystem parameters");
-            System.out.println(ENTITIES + ". Change entities");
+            System.out.println(CHANGE_ENTITIES + ". Change entities");
+            System.out.println(ADD_NEW_ENTITY + ". Add new entity");
             System.out.println(SAVE + ". Save ecosystem");
             System.out.println(EXIT + ". Go back");
 
@@ -72,8 +73,11 @@ public class EcosystemMenuConsole {
                 case ECOSYSTEM_PARAMS:
                     changeEcosystemParamsMenu(ecosystem);
                     break;
-                case ENTITIES:
+                case CHANGE_ENTITIES:
                     changeEntities(ecosystem);
+                    break;
+                case ADD_NEW_ENTITY:
+                    addNewEntity(ecosystem);
                     break;
                 case SAVE:
                     try {
@@ -98,7 +102,7 @@ public class EcosystemMenuConsole {
             case EXIT:
                 return;
             case HUMIDITY:
-                System.out.print("Enter new humidity (from 0.00 to 1.00): ");
+                System.out.print("Enter new humidity (from 0,00 to 1,00): ");
                 ecosystem.setHumidity(requireNormalizedValue());
                 break;
             case AMOUNT_OF_WATER:
@@ -106,7 +110,7 @@ public class EcosystemMenuConsole {
                 ecosystem.setAmountOfWater(requireNonNegativeFloat());
                 break;
             case SUNSHINE:
-                System.out.print("Enter new sunshine (from 0.00 to 1.00): ");
+                System.out.print("Enter new sunshine (from 0,00 to 1,00): ");
                 ecosystem.setSunshine(requireNormalizedValue());
                 break;
             case TEMPERATURE:
@@ -158,15 +162,89 @@ public class EcosystemMenuConsole {
                     System.out.println("Are you sure you want to delete " + entity.getName() + " from ecosystem? (y/n)");
                     if (requireYesOrNo()) {
                         entities.remove(entity);
-                        System.out.println(entity.getName() + " has removed from ecosystem.");
+                        System.out.println(entity.getName() + " was removed from ecosystem.");
                     }
                     break;
                 case CHANGE_COUNT:
                     System.out.println(CHANGE_COUNT + ". Change count for " + entity.getName() + ":");
                     entity.setCount(requireNonNegativeInt());
-                    System.out.println("Count for " + entity.getName() + "has changed!\n");
+                    System.out.println("Count for " + entity.getName() + "was changed!\n");
                     break;
             }
+        }
+    }
+
+    private void addNewEntity(Ecosystem ecosystem) {
+        System.out.println("What type of entities you want to add?");
+        System.out.println(ANIMALS + ". Animals");
+        System.out.println(PLANTS + ". Plants");
+        System.out.println(EXIT + ". Cancel");
+
+        switch (chooseOption(PLANTS)) {
+            case ANIMALS:
+                addAnimal(ecosystem);
+                break;
+            case PLANTS:
+                addPlant(ecosystem);
+                break;
+        }
+    }
+
+    private void addAnimal(Ecosystem ecosystem) {
+        System.out.println("Creating new animal!");
+        System.out.print("Enter name: ");
+        String name = console.next();
+        System.out.print("Enter count (non negative): ");
+        int count = requireNonNegativeInt();
+        System.out.print("Enter danger level (from 1 to 5): ");
+        int dangerLvl = requireBounderedInt(1, 5);
+        System.out.print("Choose meal type (1.CARNIVOROUS, 2.OMNIVOROUS, 3. HERBIVOROUS)");
+        int mealType = requireBounderedInt(1, 3);
+        System.out.print("Enter needed food (non negative): ");
+        int neededFood = requireNonNegativeInt();
+        System.out.print("Enter needed water (non negative): ");
+        float neededWater = requireNonNegativeFloat();
+        System.out.print("Enter normal temperature: ");
+        float temperature = requireFloat();
+        System.out.print("Enter death coefficient (from 0,00 to 1,00): ");
+        float deathCoefficient = requireNormalizedValue();
+        System.out.print("Enter born coefficient (from 0,00 to 1,00): ");
+        float bornCoefficient = requireNormalizedValue();
+
+        try {
+            ecosystemService.createAndAddAnimal(ecosystem, name, count, dangerLvl, mealType, neededFood, neededWater,
+                    temperature, deathCoefficient, bornCoefficient);
+            System.out.println("\nAnimal " + name + " was created!\n");
+        } catch (WrongDataException e) {
+            System.out.println("\nSomething went wrong while creating animal.\n");
+        }
+    }
+
+    private void addPlant(Ecosystem ecosystem) {
+        System.out.println("Creating new plant!");
+        System.out.print("Enter name: ");
+        String name = console.next();
+        System.out.print("Enter count (non negative): ");
+        int count = requireNonNegativeInt();
+        System.out.print("Enter needed humidity (from 0,00 to 1,00): ");
+        float neededHumidity = requireNormalizedValue();
+        System.out.print("Enter needed water (non negative): ");
+        float neededWater = requireNonNegativeFloat();
+        System.out.print("Enter needed sunshine (from 0,00 to 1,00): ");
+        float neededSunshine = requireNormalizedValue();
+        System.out.print("Enter normal temperature: ");
+        float temperature = requireFloat();
+        System.out.print("Enter death coefficient (from 0,00 to 1,00): ");
+        float deathCoefficient = requireNormalizedValue();
+        System.out.print("Enter born coefficient (from 0,00 to 1,00): ");
+        float bornCoefficient = requireNormalizedValue();
+
+        try {
+            ecosystemService.createAndAddPlant(ecosystem, name, count, neededHumidity, neededWater, neededSunshine,
+                    temperature, deathCoefficient, bornCoefficient);
+            System.out.println("\nPlant " + name + " was created!\n");
+        } catch (WrongDataException e) {
+            System.out.println("\nSomething went wrong while creating plant.\n");
         }
     }
 
@@ -217,6 +295,23 @@ public class EcosystemMenuConsole {
         }
     }
 
+    private int requireBounderedInt(int min, int max) {
+        int i;
+        while(true) {
+            if(console.hasNextInt()) {
+                i = console.nextInt();
+                if (i >= min && i <= max)
+                    return i;
+                else
+                    System.out.println("Enter number between" + min + " and " + max + "!");
+            } else {
+                System.out.println("Enter correct integer!");
+                console.next();
+            }
+        }
+    }
+
+
     private float requireFloat() {
         float f;
         while(true) {
@@ -253,7 +348,7 @@ public class EcosystemMenuConsole {
                 if (f >= 0.00 && f <= 1.00)
                     return f;
                 else
-                    System.out.println("Enter number between 0.00 and 1.00!");
+                    System.out.println("Enter number between 0,00 and 1,00!");
             } else {
                 System.out.println("Enter correct float!");
                 console.next();

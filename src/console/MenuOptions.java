@@ -11,8 +11,9 @@ public final class MenuOptions {
     public static final int SHORT_STATISTIC = 1;
     public static final int FULL_STATISTIC = 2;
     public static final int ECOSYSTEM_PARAMS = 3;
-    public static final int ENTITIES = 4;
-    public static final int SAVE = 5;
+    public static final int CHANGE_ENTITIES = 4;
+    public static final int ADD_NEW_ENTITY = 5;
+    public static final int SAVE = 6;
 
     //Ecosystem change params Menu
     public static final int HUMIDITY = 1;
