@@ -1,6 +1,6 @@
 package types;
 
-import ecxeptions.WrongDataException;
+import ecxeption.WrongDataException;
 
 import java.util.Arrays;
 

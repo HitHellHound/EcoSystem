@@ -1,85 +1,98 @@
 package console;
 
-import ecxeptions.WrongDataException;
-import model.Ecosystem;
+import data.EcosystemData;
+import ecxeption.WrongDataException;
 import service.EcosystemService;
 import service.EcosystemServiceImpl;
-import service.FilesService;
 import service.FilesServiceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class MainMenuConsole {
-    private final EcosystemService ecosystemService;
-    private final FilesService filesService;
-    private final Scanner console;
-
+public class MainMenuConsole extends AbstractMenu{
     public static void main(String[] args) {
-        MainMenuConsole mainMenuConsole = new MainMenuConsole(new EcosystemServiceImpl(),
-                new FilesServiceImpl(),
-                new Scanner(System.in));
+        ProcessBuilder flushProcess;
+        String os = System.getProperty("os.name");
+        if (os.startsWith("Windows"))
+            flushProcess = new ProcessBuilder("cmd", "/c", "cls").inheritIO();
+        else if (os.startsWith("Linux"))
+            flushProcess = new ProcessBuilder("clear").inheritIO();
+        else
+            flushProcess = null;
+
+        MainMenuConsole mainMenuConsole = new MainMenuConsole(new EcosystemServiceImpl(new FilesServiceImpl()),
+                new Scanner(System.in), flushProcess);
+
         mainMenuConsole.mainMenu();
     }
 
-    public MainMenuConsole(EcosystemService ecosystemService, FilesService filesService, Scanner console) {
-        this.ecosystemService = ecosystemService;
-        this.filesService = filesService;
-        this.console = console;
+    public MainMenuConsole(EcosystemService ecosystemService, Scanner console, ProcessBuilder flushProcess) {
+        super(ecosystemService, console, flushProcess);
     }
 
     public void mainMenu() {
-        List<String> saveFiles = filesService.getSaveFiles();
+        List<String> existingEcosystems = ecosystemService.getExistingEcosystems();
         while (true) {
-            System.out.println("Choose save or create new Ecosystem:");
+            flushConsole();
+            System.out.println("Create new Ecosystem or choose existing one:");
             System.out.println("1. Create new Ecosystem");
-            for (int i = 0; i < saveFiles.size(); i++)
-                System.out.println((i + 2) + ". " + saveFiles.get(i).subSequence(FilesServiceImpl.SAVE_FILE_PREFIX.length(),
-                        saveFiles.get(i).length() - FilesServiceImpl.SAVE_FILE_EXTENSION.length()));
+            for (int i = 0; i < existingEcosystems.size(); i++)
+                System.out.println((i + 2) + ". " + existingEcosystems.get(i));
             System.out.println("0. Close application");
 
-            int optionNumber = 0;
-            Ecosystem choosedEcosystem = null;
-            while (true) {
-                if (console.hasNextInt()) {
-                    optionNumber = console.nextInt();
-                    if (optionNumber > saveFiles.size() + 1 || optionNumber < 0) {
-                        System.out.println("Incorrect option number!");
-                        continue;
-                    }
-                } else {
-                    System.out.println("Enter an option number!");
-                    console.next();
-                    continue;
-                }
-
-                if (optionNumber <= 1)
-                    break;
-                else {
-                    try {
-                        choosedEcosystem = filesService.loadEcosystem(saveFiles.get(optionNumber - 2));
-                        break;
-                    } catch (WrongDataException exception) {
-                        System.out.println("Can't load this save: " + exception.getMessage() + "\n" +
-                                "Try another one");
-                    }
-                }
-            }
+            int optionNumber = chooseOption(existingEcosystems.size() + 2);
+            EcosystemData choosedEcosystem = null;
 
             if (optionNumber == 0)
                 return;
-
-            EcosystemMenuConsole ecosystemMenu = new EcosystemMenuConsole(ecosystemService, filesService, console);
-            if (optionNumber == 1) {
+            else if (optionNumber == 1) {
                 try {
-                    choosedEcosystem = ecosystemMenu.createEcosystemMenu();
+                    choosedEcosystem = createEcosystemMenu();
                 } catch (WrongDataException exception) {
                     System.out.println("Can't create ecosystem: " + exception.getMessage());
                 }
+                pressEnterToContinue();
+            } else {
+                try {
+                    choosedEcosystem = ecosystemService.getEcosystem(existingEcosystems.get(optionNumber - 2));
+                } catch (WrongDataException exception) {
+                    System.out.println("Can't load Ecosystem: " + exception.getMessage() + "\n" +
+                            "Try another one");
+                    pressEnterToContinue();
+                }
             }
 
-            if (choosedEcosystem != null)
-                ecosystemMenu.ecosystemMenu(choosedEcosystem);
+            if (choosedEcosystem != null) {
+                EcosystemMenuConsole ecosystemMenu = new EcosystemMenuConsole(ecosystemService, console, flushProcess,
+                        choosedEcosystem.getName());
+                ecosystemMenu.ecosystemMenu();
+            }
         }
+    }
+
+    private EcosystemData createEcosystemMenu() throws WrongDataException {
+        flushConsole();
+        System.out.println("Creating new Ecosystem!");
+        System.out.print("Enter name: ");
+        String name = console.next();
+        System.out.print("Enter humidity (from 0,00 to 1,00): ");
+        float humidity = requireNormalizedValue();
+        System.out.print("Enter amount of water(non negative): ");
+        float amountOfWater = requireNonNegativeFloat();
+        System.out.print("Enter sunshine (from 0,00 to 1,00): ");
+        float sunshine = requireNormalizedValue();
+        System.out.print("Enter temperature: ");
+        float temperature = requireFloat();
+
+        EcosystemData ecosystemData = new EcosystemData(name, humidity, amountOfWater, sunshine, temperature);
+        ecosystemData.setAnimals(new ArrayList<>());
+        ecosystemData.setPlants(new ArrayList<>());
+
+        ecosystemService.createEcosystem(ecosystemData);
+
+        System.out.println("Ecosystem created!");
+
+        return ecosystemData;
     }
 }

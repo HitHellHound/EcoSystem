@@ -1,23 +1,27 @@
 package service;
 
-import ecxeptions.WrongDataException;
-import model.Ecosystem;
+import data.AnimalData;
+import data.EcosystemData;
+import data.PlantData;
+import ecxeption.WrongDataException;
+
+import java.util.List;
 
 public interface EcosystemService {
-    Ecosystem createEcosystem(String name, float humidity,
-                                     float amountOfWater, float sunshine, float temperature) throws WrongDataException;
-
-    void createAndAddAnimal(Ecosystem ecosystem, String name, int count, int dangerLevel, int mealType,
-                                   int neededFood, float neededWater, float normalTemperature,
-                                   float deathCoefficient, float bornCoefficient)  throws WrongDataException;
-
-    void createAndAddPlant(Ecosystem ecosystem, String name, int count, float neededHumidity, float neededWater,
-                                  float neededSunshine, float normalTemperature,
-                                  float deathCoefficient, float bornCoefficient)  throws WrongDataException;
-
-    String createEcosystemShortStatistic(Ecosystem ecosystem);
-
-    String createEcosystemFullStatistic(Ecosystem ecosystem);
-
-    String createEcosystemFullData(Ecosystem ecosystem);
+    void createEcosystem(EcosystemData ecosystemData) throws WrongDataException;
+    EcosystemData getEcosystem(String name) throws WrongDataException;
+    EcosystemData getEcosystemParams(String ecosystemName) throws WrongDataException;
+    List<String> getExistingEcosystems();
+    void changeEcosystemParams(EcosystemData ecosystemData) throws WrongDataException;
+    List<AnimalData> getAnimals(String ecosystemName) throws WrongDataException;
+    void changeAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException;
+    void addAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException;
+    void deleteAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException;
+    List<PlantData> getPlants(String ecosystemName) throws WrongDataException;
+    void changePlant(String ecosystemName, PlantData plantData) throws WrongDataException;
+    void addPlant(String ecosystemName, PlantData plantData) throws WrongDataException;
+    void deletePlant(String ecosystemName, PlantData plantData) throws WrongDataException;
+    String createEcosystemShortStatistic(String ecosystemName) throws WrongDataException;
+    String createEcosystemFullStatistic(String ecosystemName) throws WrongDataException;
+    EcosystemData doTheEvolution(EcosystemData ecosystem);
 }

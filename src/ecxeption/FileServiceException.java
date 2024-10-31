@@ -1,4 +1,4 @@
-package ecxeptions;
+package ecxeption;
 
 public class FileServiceException extends  Exception{
     public FileServiceException() {

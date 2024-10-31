@@ -1,4 +1,4 @@
-package ecxeptions;
+package ecxeption;
 
 public class WrongDataException extends Exception {
     public WrongDataException() {

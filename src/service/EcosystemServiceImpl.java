@@ -1,63 +1,24 @@
 package service;
 
-import ecxeptions.WrongDataException;
-import model.Animal;
-import model.Ecosystem;
-import model.Plant;
-import types.DangerLevel;
-import types.MealType;
+import data.AnimalData;
+import data.EcosystemData;
+import data.PlantData;
+import ecxeption.WrongDataException;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class EcosystemServiceImpl implements EcosystemService {
-    @Override
-    public Ecosystem createEcosystem(String name, float humidity,
-                                     float amountOfWater, float sunshine, float temperature) throws WrongDataException {
-        if (humidity < 1.00 && humidity >= 0.00
-                && amountOfWater > 0
-                && sunshine >= 0.00 && sunshine <= 1.00){
+    private final FilesService filesService;
 
-            List<Animal> animals = new ArrayList<>();
-            List<Plant> plants = new ArrayList<>();
-
-            return new Ecosystem(name, animals, plants, humidity, amountOfWater, sunshine, temperature);
-        } else {
-            throw new WrongDataException("Can't create ecosystem " + name);
-        }
+    public EcosystemServiceImpl(FilesService filesService) {
+        this.filesService = filesService;
     }
 
     @Override
-    public void createAndAddAnimal(Ecosystem ecosystem, String name, int count, int dangerLevel, int mealType,
-                                   int neededFood, float neededWater, float normalTemperature,
-                                   float deathCoefficient, float bornCoefficient)  throws WrongDataException {
-        if (count >= 0 && neededFood >= 0 && neededWater >= 0 && deathCoefficient > 0.00 && deathCoefficient < 1.00
-                && bornCoefficient > 0.00 && bornCoefficient < 1.00) {
-            Animal animal = new Animal(name, count, DangerLevel.valueOfInt(dangerLevel), MealType.valueOfInt(mealType),
-                    neededFood, neededWater, normalTemperature, deathCoefficient, bornCoefficient);
-            ecosystem.getAnimals().add(animal);
-        } else {
-            throw new WrongDataException("Can't create animal " + name);
-        }
-    }
-
-    @Override
-    public void createAndAddPlant(Ecosystem ecosystem, String name, int count, float neededHumidity, float neededWater,
-                                  float neededSunshine, float normalTemperature,
-                                  float deathCoefficient, float bornCoefficient)  throws WrongDataException {
-        if (count >= 0 && neededHumidity >= 0.00 && neededHumidity < 1.00 && neededWater > 0
-                && neededSunshine > 0.00 && neededSunshine < 1.00 && deathCoefficient > 0.00 && deathCoefficient < 1.00
-                && bornCoefficient > 0.00 && bornCoefficient < 1.00) {
-            Plant plant = new Plant(name, count, neededHumidity, neededWater, neededSunshine, normalTemperature,
-                    deathCoefficient, bornCoefficient);
-            ecosystem.getPlants().add(plant);
-        } else {
-            throw new WrongDataException("Can't create plant " + name);
-        }
-    }
-
-    @Override
-    public String createEcosystemShortStatistic(Ecosystem ecosystem) {
+    public String createEcosystemShortStatistic(String ecosystemName) throws WrongDataException {
+        EcosystemData ecosystem = filesService.getEcosystem(ecosystemName);
         StringBuilder statistic = new StringBuilder();
         statistic.append(ecosystem.getName())
                 .append(":\nHumidity -- ").append(ecosystem.getHumidity())
@@ -66,18 +27,19 @@ public class EcosystemServiceImpl implements EcosystemService {
                 .append("\nTemperature").append(ecosystem.getTemperature()).append("\n\n");
 
         statistic.append("Animals:\n");
-        for (Animal animal : ecosystem.getAnimals())
+        for (AnimalData animal : ecosystem.getAnimals())
             statistic.append(animal.getName()).append(": count -- ").append(animal.getCount()).append("\n");
 
         statistic.append("\nPlants:\n");
-        for (Plant plant : ecosystem.getPlants())
+        for (PlantData plant : ecosystem.getPlants())
             statistic.append(plant.getName()).append(": count -- ").append(plant.getCount()).append("\n");
 
         return statistic.toString();
     }
 
     @Override
-    public String createEcosystemFullStatistic(Ecosystem ecosystem) {
+    public String createEcosystemFullStatistic(String ecosystemName) throws WrongDataException {
+        EcosystemData ecosystem = filesService.getEcosystem(ecosystemName);
         StringBuilder statistic = new StringBuilder();
 
         statistic.append("+----------------------------------------------------------------------+\n")
@@ -87,59 +49,141 @@ public class EcosystemServiceImpl implements EcosystemService {
                         ecosystem.getName(), ecosystem.getHumidity(), ecosystem.getAmountOfWater(), ecosystem.getSunshine(), ecosystem.getTemperature()))
                 .append("+----------------------------------------------------------------------+\n\n");
 
-        statistic.append("+-----------------------------------------------------------------------------------------------------------------+\n")
-                .append("|   Animal   |   Count   | Danger Level |  Meal Type  | Need Food | Need Water | Norm Temp | DeathCoef | BornCoef |\n")
-                .append("+-----------------------------------------------------------------------------------------------------------------+\n");
-        for (Animal animal : ecosystem.getAnimals())
-            statistic.append(String.format("| %-11.11s|%10d | %12s | %11s | %9d | %10.1f | %+9.1f | %9.2f | %8.2f |%n",
+        statistic.append("+---------------------------------------------------------------------------------------------+\n")
+                .append("|   Animal   |   Count   | Danger Level |  Meal Type  | Need Food | Norm Temp | Contains Food |\n")
+                .append("+---------------------------------------------------------------------------------------------+\n");
+        for (AnimalData animal : ecosystem.getAnimals())
+            statistic.append(String.format("| %-11.11s|%10d | %12s | %11s | %9f | %+9.1f | %13.1f |%n",
                     animal.getName(), animal.getCount(), animal.getDangerLevel().toString(), animal.getMealType().toString(),
-                    animal.getNeededFood(), animal.getNeededWater(), animal.getNormalTemperature(),
-                    animal.getDeathCoefficient(), animal.getBornCoefficient()));
-        statistic.append("+-----------------------------------------------------------------------------------------------------------------+\n\n");
+                    animal.getNeededFood(), animal.getNormalTemperature(), animal.getContainsFood()));
+        statistic.append("+---------------------------------------------------------------------------------------------+\n\n");
 
-        statistic.append("+--------------------------------------------------------------------------------------------------+\n")
-                .append("|   Plant   |   Count   | Need Humidity | Need Water | Need Sun | Norm Temp | DeathCoef | BornCoef |\n")
-                .append("+--------------------------------------------------------------------------------------------------+\n");
-        for (Plant plant : ecosystem.getPlants())
-            statistic.append(String.format("| %-10.10s|%10d | %13.2f | %10.1f | %8.2f | %+9.1f | %9.2f | %8.2f |%n",
+        statistic.append("+-------------------------------------------------------------------------------------------+\n")
+                .append("|   Plant   |   Count   | Need Humidity | Need Water | Need Sun | Norm Temp | Contains Food |\n")
+                .append("+-------------------------------------------------------------------------------------------+\n");
+        for (PlantData plant : ecosystem.getPlants())
+            statistic.append(String.format("| %-10.10s|%10d | %13.2f | %10.1f | %8.2f | %+9.1f | %13.1f |%n",
                     plant.getName(), plant.getCount(), plant.getNeededHumidity(), plant.getNeededWater(),
-                    plant.getNeededSunshine(), plant.getNormalTemperature(), plant.getDeathCoefficient(),
-                    plant.getBornCoefficient()));
-        statistic.append("+--------------------------------------------------------------------------------------------------+");
+                    plant.getNeededSunshine(), plant.getNormalTemperature(), plant.getContainsFood()));
+        statistic.append("+-------------------------------------------------------------------------------------------+");
         return statistic.toString();
     }
 
     @Override
-    public String createEcosystemFullData(Ecosystem ecosystem) {
-        StringBuilder data = new StringBuilder();
-        data.append(ecosystem.getName()).append(" ")
-                .append(ecosystem.getHumidity()).append(" ")
-                .append(ecosystem.getAmountOfWater()).append(" ")
-                .append(ecosystem.getSunshine()).append(" ")
-                .append(ecosystem.getTemperature()).append("\n\n");
+    public EcosystemData doTheEvolution(EcosystemData ecosystem) {
+        Map<PlantData, Float> plantsToCoef;
 
-        for (Animal animal : ecosystem.getAnimals())
-            data.append(animal.getName()).append(" ")
-                    .append(animal.getCount()).append(" ")
-                    .append(animal.getDangerLevel().getDngLvlInt()).append(" ")
-                    .append(animal.getMealType().getMealTypeInt()).append(" ")
-                    .append(animal.getNeededFood()).append(" ")
-                    .append(animal.getNeededWater()).append(" ")
-                    .append(animal.getNormalTemperature()).append(" ")
-                    .append(animal.getDeathCoefficient()).append(" ")
-                    .append(animal.getBornCoefficient()).append("\n");
-        data.append("\n");
+        float neededWaterSum = ecosystem.getPlants().stream()
+                .map(PlantData::getNeededWater).reduce(Float::sum)
+                .get();
 
-        for (Plant plant : ecosystem.getPlants())
-            data.append(plant.getName()).append(" ")
-                    .append(plant.getCount()).append(" ")
-                    .append(plant.getNeededHumidity()).append(" ")
-                    .append(plant.getNeededWater()).append(" ")
-                    .append(plant.getNeededSunshine()).append(" ")
-                    .append(plant.getNormalTemperature()).append(" ")
-                    .append(plant.getDeathCoefficient()).append(" ")
-                    .append(plant.getBornCoefficient()).append("\n");
+        if (neededWaterSum < ecosystem.getAmountOfWater()) {
+            plantsToCoef = ecosystem.getPlants().stream()
+                    .collect(Collectors.toMap(plant -> plant,
+                            plant -> 1.0f + 0.05f * (ecosystem.getAmountOfWater() - neededWaterSum) / neededWaterSum));
+            ecosystem.setAmountOfWater(ecosystem.getAmountOfWater() - neededWaterSum);
+        }
+        else {
+            plantsToCoef = ecosystem.getPlants().stream()
+                    .collect(Collectors.toMap(plant -> plant, plant -> ecosystem.getAmountOfWater() / neededWaterSum));
+            ecosystem.setAmountOfWater(0);
+        }
 
-        return data.toString();
+        for (Map.Entry<PlantData, Float> plantToCoef : plantsToCoef.entrySet()) {
+            float multiplier = 1.0f;
+
+            float humidityDiff = ecosystem.getHumidity() - plantToCoef.getKey().getNeededHumidity();
+            if (humidityDiff >= 0)
+                multiplier += humidityDiff;
+            else
+                multiplier *= ecosystem.getHumidity() / plantToCoef.getKey().getNeededHumidity();
+
+            float sunshineDiff = ecosystem.getSunshine() - plantToCoef.getKey().getNeededSunshine();
+            if (sunshineDiff >= 0)
+                multiplier += sunshineDiff;
+            else
+                multiplier *= ecosystem.getSunshine() / plantToCoef.getKey().getNeededSunshine();
+
+            float temperatureDiff = Math.abs(ecosystem.getTemperature() - plantToCoef.getKey().getNormalTemperature());
+            multiplier -= 0.05f * temperatureDiff;
+
+            plantToCoef.setValue(plantToCoef.getValue() * multiplier);
+        }
+
+        float plantFoodSum = plantsToCoef.entrySet().stream()
+                .map(entry -> entry.getKey().getCount() * entry.getValue() * entry.getKey().getContainsFood())
+                .reduce(Float::sum)
+                .get();
+
+
+        Map<PlantData, Float> plantToWater = ecosystem.getPlants().stream().collect(Collectors.toMap(plant -> plant,
+                (PlantData plant) -> plant.getNeededWater() * plant.getCount()));
+
+        return ecosystem;
+    }
+
+    @Override
+    public List<String> getExistingEcosystems() {
+        return filesService.getExistingEcosystems();
+    }
+
+    @Override
+    public void createEcosystem(EcosystemData ecosystemData) throws WrongDataException {
+        filesService.createEcosystem(ecosystemData);
+    }
+
+    @Override
+    public EcosystemData getEcosystem(String name) throws WrongDataException {
+        return filesService.getEcosystem(name);
+    }
+
+    @Override
+    public EcosystemData getEcosystemParams(String ecosystemName) throws WrongDataException {
+        return filesService.getEcosystemParams(ecosystemName);
+    }
+
+    @Override
+    public void changeEcosystemParams(EcosystemData ecosystemData) throws WrongDataException {
+        filesService.changeEcosystemParams(ecosystemData);
+    }
+
+    @Override
+    public List<AnimalData> getAnimals(String ecosystemName) throws WrongDataException {
+        return filesService.getAnimals(ecosystemName);
+    }
+
+    @Override
+    public void changeAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException {
+        filesService.changeAnimal(ecosystemName, animalData);
+    }
+
+    @Override
+    public void addAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException {
+        filesService.addAnimal(ecosystemName, animalData);
+    }
+
+    @Override
+    public void deleteAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException {
+        filesService.deleteAnimal(ecosystemName, animalData);
+    }
+
+    @Override
+    public List<PlantData> getPlants(String ecosystemName) throws WrongDataException {
+        return filesService.getPlants(ecosystemName);
+    }
+
+    @Override
+    public void changePlant(String ecosystemName, PlantData plantData) throws WrongDataException {
+        filesService.changePlant(ecosystemName, plantData);
+    }
+
+    @Override
+    public void addPlant(String ecosystemName, PlantData plantData) throws WrongDataException {
+        filesService.addPlant(ecosystemName, plantData);
+    }
+
+    @Override
+    public void deletePlant(String ecosystemName, PlantData plantData) throws WrongDataException {
+        filesService.deletePlant(ecosystemName, plantData);
     }
 }

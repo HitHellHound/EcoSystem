@@ -6,18 +6,16 @@ public class Plant extends Entity {
     private final float neededSunshine;
     private final float normalTemperature;
 
-    private final float deathCoefficient;
-    private final float bornCoefficient;
+    private final float containsFood;
 
-    public Plant(String name, int count, float neededHumidity, float neededWater, float neededSunshine, float normalTemperature,
-                 float deathCoefficient, float bornCoefficient) {
+    public Plant(String name, int count, float neededHumidity, float neededWater, float neededSunshine,
+                 float normalTemperature, float containsFood) {
         super(name, count);
         this.neededHumidity = neededHumidity;
         this.neededWater = neededWater;
         this.neededSunshine = neededSunshine;
         this.normalTemperature = normalTemperature;
-        this.deathCoefficient = deathCoefficient;
-        this.bornCoefficient = bornCoefficient;
+        this.containsFood = containsFood;
     }
 
     public float getNeededHumidity() {
@@ -36,11 +34,7 @@ public class Plant extends Entity {
         return normalTemperature;
     }
 
-    public float getDeathCoefficient() {
-        return deathCoefficient;
-    }
-
-    public float getBornCoefficient() {
-        return bornCoefficient;
+    public float getContainsFood() {
+        return containsFood;
     }
 }
