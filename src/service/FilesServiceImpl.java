@@ -53,7 +53,12 @@ public class FilesServiceImpl implements FilesService {
 
     @Override
     public List<String> getExistingEcosystems() {
-        return Stream.of(new File(SAVES_PATH).listFiles()).
+        File[] files = new File(SAVES_PATH).listFiles();
+        if (files == null) {
+            new File(SAVES_PATH).mkdirs();
+            files = new File(SAVES_PATH).listFiles();
+        }
+        return Stream.of(files).
                 filter(file -> !file.isDirectory())
                 .map(File::getName)
                 .filter(fileName -> fileName.startsWith(SAVE_FILE_PREFIX) && fileName.endsWith(SAVE_FILE_EXTENSION))
