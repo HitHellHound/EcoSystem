@@ -5,15 +5,15 @@ import data.EcosystemData;
 import data.PlantData;
 import ecxeption.WrongDataException;
 import service.EcosystemService;
-import types.DangerLevel;
-import types.MealType;
+import enums.DangerLevel;
+import enums.MealType;
 
 import java.util.List;
 import java.util.Scanner;
 
 import static console.MenuOptions.*;
 
-public class EcosystemMenuConsole extends AbstractMenu{
+public class EcosystemMenuConsole extends AbstractMenu {
     private final String ecosystemName;
 
     public EcosystemMenuConsole(EcosystemService ecosystemService, Scanner console, ProcessBuilder flushProcess,
@@ -31,21 +31,22 @@ public class EcosystemMenuConsole extends AbstractMenu{
             System.out.println(ECOSYSTEM_PARAMS + ". Change ecosystem parameters");
             System.out.println(CHANGE_ENTITIES + ". Change entities");
             System.out.println(ADD_NEW_ENTITY + ". Add new entity");
+            System.out.println(EVOLUTION_STEP + ". Make Evolution step");
             System.out.println(EXIT + ". Go back");
 
             //ecosystemService.doTheEvolution(ecosystemName);
             try {
-                switch (chooseOption(ADD_NEW_ENTITY)) {
+                switch (chooseOption(EVOLUTION_STEP)) {
                     case EXIT:
                         return;
                     case SHORT_STATISTIC:
                         flushConsole();
-                        System.out.println(ecosystemService.createEcosystemShortStatistic(ecosystemName));
+                        System.out.println(ecosystemService.getEcosystemShortStatistic(ecosystemName));
                         pressEnterToContinue();
                         break;
                     case FULL_STATISTIC:
                         flushConsole();
-                        System.out.println(ecosystemService.createEcosystemFullStatistic(ecosystemName));
+                        System.out.println(ecosystemService.getEcosystemFullStatistic(ecosystemName));
                         pressEnterToContinue();
                         break;
                     case ECOSYSTEM_PARAMS:
@@ -63,6 +64,10 @@ public class EcosystemMenuConsole extends AbstractMenu{
                         addNewEntity();
                         pressEnterToContinue();
                         break;
+                    case EVOLUTION_STEP:
+                        flushConsole();
+                        doTheEvolution();
+                        pressEnterToContinue();
                 }
             } catch (WrongDataException exception) {
                 System.out.println("Some problems with ecosystem persistence: " + exception.getMessage());
@@ -281,5 +286,14 @@ public class EcosystemMenuConsole extends AbstractMenu{
         } catch (WrongDataException e) {
             System.out.println("\nSomething went wrong while creating plant.\n");
         }
+    }
+
+    private void doTheEvolution() throws WrongDataException {
+        System.out.println("Ecosystem before evolution: ");
+        System.out.println(ecosystemService.getEcosystemShortStatistic(ecosystemName));
+        EcosystemData ecosystemData = ecosystemService.doTheEvolution(ecosystemService.getEcosystem(ecosystemName));
+        ecosystemService.saveEcosystemStatement(ecosystemData);
+        System.out.println("Ecosystem after evolution: ");
+        System.out.println(ecosystemService.getEcosystemShortStatistic(ecosystemName));
     }
 }

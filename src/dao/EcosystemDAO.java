@@ -1,4 +1,4 @@
-package service;
+package dao;
 
 import data.AnimalData;
 import data.EcosystemData;
@@ -7,7 +7,7 @@ import ecxeption.WrongDataException;
 
 import java.util.List;
 
-public interface FilesService {
+public interface EcosystemDAO {
     void createEcosystem(EcosystemData ecosystemData) throws WrongDataException;
     EcosystemData getEcosystem(String ecosystemName) throws WrongDataException;
     EcosystemData getEcosystemParams(String ecosystemName) throws WrongDataException;

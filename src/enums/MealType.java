@@ -1,4 +1,4 @@
-package types;
+package enums;
 
 import ecxeption.WrongDataException;
 
@@ -22,5 +22,10 @@ public enum MealType {
     public static MealType valueOfInt(int i) throws WrongDataException {
         return Arrays.stream(MealType.values()).filter(mealType -> mealType.mealTypeInt == i)
                 .findFirst().orElseThrow(() -> new WrongDataException("No such Meal Type for " + i));
+    }
+
+    public static MealType valueOrNullOfInt(int i) {
+        return Arrays.stream(MealType.values()).filter(mealType -> mealType.mealTypeInt == i)
+                .findFirst().orElse(null);
     }
 }

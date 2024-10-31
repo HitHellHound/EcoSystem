@@ -1,4 +1,4 @@
-package service;
+package dao;
 
 import data.AnimalData;
 import data.EcosystemData;
@@ -7,8 +7,8 @@ import ecxeption.WrongDataException;
 import model.Animal;
 import model.Ecosystem;
 import model.Plant;
-import types.DangerLevel;
-import types.MealType;
+import enums.DangerLevel;
+import enums.MealType;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FilesServiceImpl implements FilesService {
+public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
     public static final String SAVES_PATH = "saves/";
     public static final String SAVE_FILE_PREFIX = "save_";
     public static final String SAVE_FILE_EXTENSION = ".txt";
@@ -62,8 +62,8 @@ public class FilesServiceImpl implements FilesService {
                 filter(file -> !file.isDirectory())
                 .map(File::getName)
                 .filter(fileName -> fileName.startsWith(SAVE_FILE_PREFIX) && fileName.endsWith(SAVE_FILE_EXTENSION))
-                .map(fileName -> fileName.subSequence(FilesServiceImpl.SAVE_FILE_PREFIX.length(),
-                        fileName.length() - FilesServiceImpl.SAVE_FILE_EXTENSION.length()).toString())
+                .map(fileName -> fileName.subSequence(SaveFileEcosystemDAOImpl.SAVE_FILE_PREFIX.length(),
+                        fileName.length() - SaveFileEcosystemDAOImpl.SAVE_FILE_EXTENSION.length()).toString())
                 .collect(Collectors.toList());
     }
 

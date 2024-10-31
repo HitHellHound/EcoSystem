@@ -4,7 +4,7 @@ import data.EcosystemData;
 import ecxeption.WrongDataException;
 import service.EcosystemService;
 import service.EcosystemServiceImpl;
-import service.FilesServiceImpl;
+import dao.SaveFileEcosystemDAOImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class MainMenuConsole extends AbstractMenu{
         else
             flushProcess = null;
 
-        MainMenuConsole mainMenuConsole = new MainMenuConsole(new EcosystemServiceImpl(new FilesServiceImpl()),
+        MainMenuConsole mainMenuConsole = new MainMenuConsole(new EcosystemServiceImpl(new SaveFileEcosystemDAOImpl()),
                 new Scanner(System.in), flushProcess);
 
         mainMenuConsole.mainMenu();

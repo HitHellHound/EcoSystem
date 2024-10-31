@@ -1,7 +1,7 @@
 package model;
 
-import types.DangerLevel;
-import types.MealType;
+import enums.DangerLevel;
+import enums.MealType;
 
 public class Animal extends Entity {
     private final DangerLevel dangerLevel;

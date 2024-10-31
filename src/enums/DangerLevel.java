@@ -1,4 +1,4 @@
-package types;
+package enums;
 
 import ecxeption.WrongDataException;
 
@@ -24,5 +24,10 @@ public enum DangerLevel {
     public static DangerLevel valueOfInt(int i) throws WrongDataException {
         return Arrays.stream(DangerLevel.values()).filter(dangerLevel -> dangerLevel.dngLvlInt == i)
                 .findFirst().orElseThrow(() -> new WrongDataException("No such Danger Level for " + i));
+    }
+
+    public static DangerLevel valueOrNullOfInt(int i) {
+        return Arrays.stream(DangerLevel.values()).filter(dangerLevel -> dangerLevel.dngLvlInt == i)
+                .findFirst().orElse(null);
     }
 }

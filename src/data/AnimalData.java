@@ -1,7 +1,7 @@
 package data;
 
-import types.DangerLevel;
-import types.MealType;
+import enums.DangerLevel;
+import enums.MealType;
 
 public class AnimalData extends EntityData {
     private DangerLevel dangerLevel;

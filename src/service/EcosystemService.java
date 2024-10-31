@@ -12,6 +12,7 @@ public interface EcosystemService {
     EcosystemData getEcosystem(String name) throws WrongDataException;
     EcosystemData getEcosystemParams(String ecosystemName) throws WrongDataException;
     List<String> getExistingEcosystems();
+    void saveEcosystemStatement(EcosystemData ecosystemData) throws WrongDataException;
     void changeEcosystemParams(EcosystemData ecosystemData) throws WrongDataException;
     List<AnimalData> getAnimals(String ecosystemName) throws WrongDataException;
     void changeAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException;
@@ -21,7 +22,7 @@ public interface EcosystemService {
     void changePlant(String ecosystemName, PlantData plantData) throws WrongDataException;
     void addPlant(String ecosystemName, PlantData plantData) throws WrongDataException;
     void deletePlant(String ecosystemName, PlantData plantData) throws WrongDataException;
-    String createEcosystemShortStatistic(String ecosystemName) throws WrongDataException;
-    String createEcosystemFullStatistic(String ecosystemName) throws WrongDataException;
+    String getEcosystemShortStatistic(String ecosystemName) throws WrongDataException;
+    String getEcosystemFullStatistic(String ecosystemName) throws WrongDataException;
     EcosystemData doTheEvolution(EcosystemData ecosystem);
 }
