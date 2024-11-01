@@ -20,6 +20,7 @@ public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
     public static final String SAVES_PATH = "saves/";
     public static final String SAVE_FILE_PREFIX = "save_";
     public static final String SAVE_FILE_EXTENSION = ".txt";
+    private final static float FLOAT_FAULT = 0.0005f;
 
     private Ecosystem loadedEcosystem;
 
@@ -347,9 +348,9 @@ public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
     }
 
     private void validateEcosystemParams(EcosystemData ecosystem) throws WrongDataException {
-        if (ecosystem.getHumidity() < 0.00 || ecosystem.getHumidity() > 1.00
+        if (ecosystem.getHumidity() < 0.00 || ecosystem.getHumidity() > 1.00 + FLOAT_FAULT
                 || ecosystem.getAmountOfWater() < 0
-                || ecosystem.getSunshine() < 0.00 || ecosystem.getSunshine() > 1.00) {
+                || ecosystem.getSunshine() < 0.00 || ecosystem.getSunshine() > 1.00 + FLOAT_FAULT) {
             throw new WrongDataException("Some parameters in ecosystem " + ecosystem.getName() + " out of bounds");
         }
     }
@@ -364,9 +365,9 @@ public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
 
     private void validatePlant(PlantData plant) throws WrongDataException {
         if (plant.getCount() < 0
-                || plant.getNeededHumidity() < 0.00 || plant.getNeededHumidity() > 1.00
+                || plant.getNeededHumidity() < 0.00 || plant.getNeededHumidity() > 1.00 + FLOAT_FAULT
                 || plant.getNeededWater() < 0
-                || plant.getNeededSunshine() < 0.00 || plant.getNeededSunshine() > 1.00
+                || plant.getNeededSunshine() < 0.00 || plant.getNeededSunshine() > 1.00 + FLOAT_FAULT
                 || plant.getContainsFood() < 0.00) {
             throw new WrongDataException("Some parameters in plant " + plant.getName() + " out of bounds");
         }

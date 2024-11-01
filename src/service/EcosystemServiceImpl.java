@@ -189,6 +189,39 @@ public class EcosystemServiceImpl implements EcosystemService {
     }
 
     @Override
+    public String randomChangeEcosystemParams(EcosystemData ecosystemData) {
+        Random random = new Random();
+
+        float newHumidity = Math.abs(ecosystemData.getHumidity() + 0.05f * (float) (random.nextGaussian() / 3));
+        if (newHumidity > 1 + FLOAT_FAULT)
+            newHumidity = 1.0f - FLOAT_FAULT;
+
+        float newAmountOfWater = ecosystemData.getAmountOfWater()
+                + ecosystemData.getAmountOfWater() * (float) Math.abs((random.nextGaussian() / 3));
+
+        float newSunshine = Math.abs(ecosystemData.getSunshine() + 0.05f * (float) (random.nextGaussian() / 3));
+        if (newSunshine > 1 + FLOAT_FAULT)
+            newSunshine = 1.0f - FLOAT_FAULT;
+
+        float newTemperature = ecosystemData.getTemperature() + 2.5f * (float) (random.nextGaussian() / 3);
+
+        String ecosystemChanges = "Ecosystem " + ecosystemData.getName() + " parameters changes: " +
+                String.format("Humidity: %1.2f (%+1.2f); Amount of water: %.1f (%+.1f); " +
+                        "Sunshine: %1.2f (%+1.2f); Temperature %+.1f (%+.1f)",
+                        newHumidity, newHumidity - ecosystemData.getHumidity(),
+                        newAmountOfWater, newAmountOfWater - ecosystemData.getAmountOfWater(),
+                        newSunshine, newSunshine - ecosystemData.getSunshine(),
+                        newTemperature, newTemperature - ecosystemData.getTemperature());
+
+        ecosystemData.setHumidity(newHumidity);
+        ecosystemData.setAmountOfWater(newAmountOfWater);
+        ecosystemData.setSunshine(newSunshine);
+        ecosystemData.setTemperature(newTemperature);
+
+        return ecosystemChanges;
+    }
+
+    @Override
     public EcosystemData doTheEvolution(EcosystemData ecosystemOriginal) {
         EcosystemData ecosystem = makeEcosystemDataCopy(ecosystemOriginal);
 

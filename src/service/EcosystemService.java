@@ -30,4 +30,5 @@ public interface EcosystemService {
     String getEcosystemFullStatistic(String ecosystemName) throws WrongDataException;
     String makeEcosystemChangeStatistic(EcosystemData ecosystemChanged, EcosystemData ecosystemOriginal);
     EcosystemData doTheEvolution(EcosystemData ecosystem);
+    String randomChangeEcosystemParams(EcosystemData ecosystemData);
 }

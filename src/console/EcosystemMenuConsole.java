@@ -8,12 +8,23 @@ import service.EcosystemService;
 import enums.DangerLevel;
 import enums.MealType;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import static console.MenuOptions.*;
 
 public class EcosystemMenuConsole extends AbstractMenu {
+    private final static Logger autoEvolutionLogger;
+    static {
+        autoEvolutionLogger = Logger.getLogger(EcosystemMenuConsole.class.getName());
+        autoEvolutionLogger.setUseParentHandlers(false);
+    }
+    private final static String LOG_DIRECTORY = "logs/";
+
     private final String ecosystemName;
 
     public EcosystemMenuConsole(EcosystemService ecosystemService, Scanner console, ProcessBuilder flushProcess,
@@ -322,12 +333,18 @@ public class EcosystemMenuConsole extends AbstractMenu {
     }
 
     private void autoEvolution() {
-        AutoEvolutionThread autoEvolutionThread = new AutoEvolutionThread();
-        autoEvolutionThread.start();
-        chooseOption(EXIT);
-        autoEvolutionThread.interrupt();
         try {
+            FileHandler fileHandler = new FileHandler(LOG_DIRECTORY + "log_autoEvolution_" + ecosystemName + ".txt", true);
+            fileHandler.setFormatter(new SimpleFormatter());
+            autoEvolutionLogger.addHandler(fileHandler);
+            AutoEvolutionThread autoEvolutionThread = new AutoEvolutionThread();
+            autoEvolutionThread.start();
+            chooseOption(EXIT);
+            autoEvolutionThread.interrupt();
             autoEvolutionThread.join(10000);
+            fileHandler.close();
+        } catch (IOException exception) {
+            System.out.println("Can't start auto evolution. Logger can't interact with log file: " + exception.getMessage());
         } catch (InterruptedException e) {
             throw new RuntimeException("Auto evolution don't stop after 10 seconds");
         }
@@ -343,11 +360,18 @@ public class EcosystemMenuConsole extends AbstractMenu {
                 System.out.println("Auto evolution step " + evolutionCounter);
                 try {
                     EcosystemData ecosystemOriginal = ecosystemService.getEcosystem(ecosystemName);
+                    autoEvolutionLogger.info(ecosystemService.randomChangeEcosystemParams(ecosystemOriginal));
                     EcosystemData ecosystemEvolved = ecosystemService.doTheEvolution(ecosystemOriginal);
                     ecosystemService.saveEcosystemStatement(ecosystemEvolved);
-                    System.out.println(ecosystemService.getEcosystemFullStatistic(ecosystemName));
+                    String stepStatistic = ecosystemService.getEcosystemFullStatistic(ecosystemName);
+                    System.out.println(stepStatistic);
+                    autoEvolutionLogger.info(ecosystemService.makeEcosystemChangeStatistic(ecosystemEvolved, ecosystemOriginal));
+                    autoEvolutionLogger.info("Auto evolution step " + evolutionCounter + "\n"
+                            + stepStatistic);
                 } catch (WrongDataException exception) {
-                    System.out.println("Auto evolution unexpectedly stopped: " + exception.getMessage());
+                    String exceptionMessage = "Auto evolution unexpectedly stopped: " + exception.getMessage();
+                    System.out.println(exceptionMessage);
+                    autoEvolutionLogger.severe(exceptionMessage);
                     break;
                 }
                 System.out.println(EXIT + ". Stop auto evolution");
@@ -358,7 +382,9 @@ public class EcosystemMenuConsole extends AbstractMenu {
                     break;
                 }
             }
-            System.out.println("Auto evolution stopped after " + (evolutionCounter - 1)  + " evolutions");
+            String stopMessage = "Auto evolution stopped after " + (evolutionCounter - 1)  + " evolutions";
+            System.out.println(stopMessage);
+            autoEvolutionLogger.info(stopMessage);
         }
     }
 }
