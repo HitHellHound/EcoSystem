@@ -33,10 +33,11 @@ public class EcosystemMenuConsole extends AbstractMenu {
             System.out.println(ADD_NEW_ENTITY + ". Add new entity");
             System.out.println(EVOLUTION_STEP + ". Make Evolution step");
             System.out.println(PREDICTION + ". Make prediction");
+            System.out.println(AUTO_EVOLUTION + ". Start auto evolution");
             System.out.println(EXIT + ". Go back");
 
             try {
-                switch (chooseOption(PREDICTION)) {
+                switch (chooseOption(AUTO_EVOLUTION)) {
                     case EXIT:
                         ecosystemService.closeEcosystem();
                         return;
@@ -73,6 +74,10 @@ public class EcosystemMenuConsole extends AbstractMenu {
                     case PREDICTION:
                         flushConsole();
                         makePrediction();
+                        pressEnterToContinue();
+                        break;
+                    case AUTO_EVOLUTION:
+                        autoEvolution();
                         pressEnterToContinue();
                         break;
                 }
@@ -314,5 +319,46 @@ public class EcosystemMenuConsole extends AbstractMenu {
         }
         System.out.println("Ecosystem evolution predict after " + evolutionSteps + " steps: ");
         System.out.println(ecosystemService.makeEcosystemChangeStatistic(ecosystemEvolved, ecosystemOriginal));
+    }
+
+    private void autoEvolution() {
+        AutoEvolutionThread autoEvolutionThread = new AutoEvolutionThread();
+        autoEvolutionThread.start();
+        chooseOption(EXIT);
+        autoEvolutionThread.interrupt();
+        try {
+            autoEvolutionThread.join(10000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Auto evolution don't stop after 10 seconds");
+        }
+    }
+
+    private class AutoEvolutionThread extends Thread {
+        @Override
+        public void run() {
+            int evolutionCounter = 1;
+
+            while (!isInterrupted()) {
+                flushConsole();
+                System.out.println("Auto evolution step " + evolutionCounter);
+                try {
+                    EcosystemData ecosystemOriginal = ecosystemService.getEcosystem(ecosystemName);
+                    EcosystemData ecosystemEvolved = ecosystemService.doTheEvolution(ecosystemOriginal);
+                    ecosystemService.saveEcosystemStatement(ecosystemEvolved);
+                    System.out.println(ecosystemService.getEcosystemFullStatistic(ecosystemName));
+                } catch (WrongDataException exception) {
+                    System.out.println("Auto evolution unexpectedly stopped: " + exception.getMessage());
+                    break;
+                }
+                System.out.println(EXIT + ". Stop auto evolution");
+                evolutionCounter++;
+                try {
+                    sleep(5000);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+            System.out.println("Auto evolution stopped after " + (evolutionCounter - 1)  + " evolutions");
+        }
     }
 }

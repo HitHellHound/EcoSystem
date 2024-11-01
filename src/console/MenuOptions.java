@@ -15,6 +15,7 @@ public final class MenuOptions {
     public static final int ADD_NEW_ENTITY = 5;
     public static final int EVOLUTION_STEP = 6;
     public static final int PREDICTION = 7;
+    public static final int AUTO_EVOLUTION = 8;
 
     //Ecosystem change params Menu
     public static final int HUMIDITY = 1;
