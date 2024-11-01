@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Deprecated
 public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
     public static final String SAVES_PATH = "saves/";
     public static final String SAVE_FILE_PREFIX = "save_";
@@ -40,7 +41,7 @@ public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
     }
 
     @Override
-    public EcosystemData getEcosystem(String ecosystemName) throws WrongDataException {
+    public EcosystemData getFullEcosystem(String ecosystemName) throws WrongDataException {
         if (!isEcosystemLoaded(ecosystemName)) {
             loadEcosystem(ecosystemName);
         }
@@ -65,13 +66,13 @@ public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
                 filter(file -> !file.isDirectory())
                 .map(File::getName)
                 .filter(fileName -> fileName.startsWith(SAVE_FILE_PREFIX) && fileName.endsWith(SAVE_FILE_EXTENSION))
-                .map(fileName -> fileName.subSequence(SaveFileEcosystemDAOImpl.SAVE_FILE_PREFIX.length(),
-                        fileName.length() - SaveFileEcosystemDAOImpl.SAVE_FILE_EXTENSION.length()).toString())
+                .map(fileName -> fileName.subSequence(SAVE_FILE_PREFIX.length(),
+                        fileName.length() - SAVE_FILE_EXTENSION.length()).toString())
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void changeEcosystemParams(EcosystemData ecosystemData) throws WrongDataException {
+    public void updateEcosystemParams(EcosystemData ecosystemData) throws WrongDataException {
         validateEcosystemParams(ecosystemData);
         if (!isEcosystemLoaded(ecosystemData.getName())) {
             loadEcosystem(ecosystemData.getName());
@@ -84,11 +85,6 @@ public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
     }
 
     @Override
-    public void closeEcosystem() {
-        loadedEcosystem = null;
-    }
-
-    @Override
     public List<AnimalData> getAnimals(String ecosystemName) throws WrongDataException {
         if (!isEcosystemLoaded(ecosystemName)) {
             loadEcosystem(ecosystemName);
@@ -97,7 +93,7 @@ public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
     }
 
     @Override
-    public void changeAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException {
+    public void updateAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException {
         validateAnimal(animalData);
         if (!isEcosystemLoaded(ecosystemName)) {
             loadEcosystem(ecosystemName);
@@ -147,7 +143,7 @@ public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
     }
 
     @Override
-    public void changePlant(String ecosystemName, PlantData plantData) throws WrongDataException {
+    public void updatePlant(String ecosystemName, PlantData plantData) throws WrongDataException {
         validatePlant(plantData);
         if (!isEcosystemLoaded(ecosystemName)) {
             loadEcosystem(ecosystemName);

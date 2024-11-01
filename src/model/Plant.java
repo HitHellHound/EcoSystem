@@ -1,5 +1,6 @@
 package model;
 
+@Deprecated
 public class Plant extends Entity {
     private final float neededHumidity;
     private final float neededWater;

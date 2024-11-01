@@ -3,6 +3,7 @@ package model;
 import enums.DangerLevel;
 import enums.MealType;
 
+@Deprecated
 public class Animal extends Entity {
     private final DangerLevel dangerLevel;
     private final MealType mealType;

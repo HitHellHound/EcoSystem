@@ -31,4 +31,5 @@ EcoSystem.iml
 
 saves/
 bin/
-logs/*
+logs/
+ecosystemsData/

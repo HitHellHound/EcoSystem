@@ -55,7 +55,6 @@ public class EcosystemMenuConsole extends AbstractMenu {
             try {
                 switch (chooseOption(AUTO_EVOLUTION)) {
                     case EXIT:
-                        ecosystemService.closeEcosystem();
                         return;
                     case SHORT_STATISTIC:
                         flushConsole();
@@ -319,7 +318,7 @@ public class EcosystemMenuConsole extends AbstractMenu {
     private void doTheEvolution() throws WrongDataException {
         EcosystemData ecosystemOriginal = ecosystemService.getEcosystem(ecosystemName);
         EcosystemData ecosystemEvolved = ecosystemService.doTheEvolution(ecosystemOriginal);
-        ecosystemService.saveEcosystemStatement(ecosystemEvolved);
+        ecosystemService.updateFullEcosystem(ecosystemEvolved);
         System.out.println("Ecosystem after evolution: ");
         System.out.println(ecosystemService.makeEcosystemChangeStatistic(ecosystemEvolved, ecosystemOriginal));
     }
@@ -351,7 +350,7 @@ public class EcosystemMenuConsole extends AbstractMenu {
         } catch (IOException exception) {
             System.out.println("Can't start auto evolution. Logger can't interact with log file: " + exception.getMessage());
         } catch (InterruptedException e) {
-            throw new RuntimeException("Auto evolution don't stop after 10 seconds");
+            throw new RuntimeException("Auto evolution doesn't stop after 10 seconds");
         }
     }
 
@@ -367,7 +366,7 @@ public class EcosystemMenuConsole extends AbstractMenu {
                     EcosystemData ecosystemOriginal = ecosystemService.getEcosystem(ecosystemName);
                     autoEvolutionLogger.info(ecosystemService.randomChangeEcosystemParams(ecosystemOriginal));
                     EcosystemData ecosystemEvolved = ecosystemService.doTheEvolution(ecosystemOriginal);
-                    ecosystemService.saveEcosystemStatement(ecosystemEvolved);
+                    ecosystemService.updateFullEcosystem(ecosystemEvolved);
                     String stepStatistic = ecosystemService.getEcosystemFullStatistic(ecosystemName);
                     System.out.println(stepStatistic);
                     autoEvolutionLogger.info(ecosystemService.makeEcosystemChangeStatistic(ecosystemEvolved, ecosystemOriginal));

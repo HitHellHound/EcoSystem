@@ -1,5 +1,6 @@
 package model;
 
+@Deprecated
 public abstract class Entity {
     private final String name;
     private int count;

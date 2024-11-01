@@ -1,5 +1,6 @@
 package console;
 
+import dao.FilesEcosystemDAOImpl;
 import data.EcosystemData;
 import ecxeption.WrongDataException;
 import service.EcosystemService;
@@ -21,7 +22,7 @@ public class MainMenuConsole extends AbstractMenu{
         else
             flushProcess = null;
 
-        MainMenuConsole mainMenuConsole = new MainMenuConsole(new EcosystemServiceImpl(new SaveFileEcosystemDAOImpl()),
+        MainMenuConsole mainMenuConsole = new MainMenuConsole(new EcosystemServiceImpl(new FilesEcosystemDAOImpl()),
                 new Scanner(System.in), flushProcess);
 
         mainMenuConsole.mainMenu();
@@ -32,8 +33,8 @@ public class MainMenuConsole extends AbstractMenu{
     }
 
     public void mainMenu() {
-        List<String> existingEcosystems = ecosystemService.getExistingEcosystems();
         while (true) {
+            List<String> existingEcosystems = ecosystemService.getExistingEcosystems();
             flushConsole();
             System.out.println("Create new Ecosystem or choose existing one:");
             System.out.println("1. Create new Ecosystem");

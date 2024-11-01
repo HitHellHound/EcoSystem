@@ -12,9 +12,8 @@ public interface EcosystemService {
     EcosystemData getEcosystem(String name) throws WrongDataException;
     EcosystemData getEcosystemParams(String ecosystemName) throws WrongDataException;
     List<String> getExistingEcosystems();
-    void saveEcosystemStatement(EcosystemData ecosystemData) throws WrongDataException;
+    void updateFullEcosystem(EcosystemData ecosystemData) throws WrongDataException;
     void changeEcosystemParams(EcosystemData ecosystemData) throws WrongDataException;
-    void closeEcosystem();
 
     List<AnimalData> getAnimals(String ecosystemName) throws WrongDataException;
     void changeAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException;

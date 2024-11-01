@@ -2,6 +2,7 @@ package model;
 
 import java.util.List;
 
+@Deprecated
 public class Ecosystem {
     private final String name;
 

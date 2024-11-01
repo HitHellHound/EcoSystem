@@ -25,28 +25,34 @@ public class EcosystemServiceImpl implements EcosystemService {
 
     @Override
     public String getEcosystemShortStatistic(String ecosystemName) throws WrongDataException {
-        EcosystemData ecosystem = ecosystemDAO.getEcosystem(ecosystemName);
+        EcosystemData ecosystem = ecosystemDAO.getFullEcosystem(ecosystemName);
         StringBuilder statistic = new StringBuilder();
         statistic.append(ecosystem.getName())
-                .append(":\nHumidity -- ").append(ecosystem.getHumidity())
+                .append(":\nHumidity -- ").append(String.format("%1.2f", ecosystem.getHumidity()))
                 .append("\nAmount of Water -- ").append(ecosystem.getAmountOfWater())
-                .append("\nSunshine -- ").append(ecosystem.getSunshine())
-                .append("\nTemperature -- ").append(ecosystem.getTemperature()).append("\n\n");
+                .append("\nSunshine -- ").append(String.format("%1.2f", ecosystem.getSunshine()))
+                .append("\nTemperature -- ").append(String.format("%+.1f", ecosystem.getTemperature())).append("\n");
 
-        statistic.append("Animals:\n");
-        for (AnimalData animal : ecosystem.getAnimals())
-            statistic.append(animal.getName()).append(": count -- ").append(animal.getCount()).append("\n");
+        statistic.append("\nAnimals:\n");
+        if (!ecosystem.getAnimals().isEmpty())
+            for (AnimalData animal : ecosystem.getAnimals())
+                statistic.append(animal.getName()).append(": count -- ").append(animal.getCount()).append("\n");
+        else
+            statistic.append("Ecosystem doesn't have animals\n");
 
         statistic.append("\nPlants:\n");
-        for (PlantData plant : ecosystem.getPlants())
-            statistic.append(plant.getName()).append(": count -- ").append(plant.getCount()).append("\n");
+        if (!ecosystem.getPlants().isEmpty())
+            for (PlantData plant : ecosystem.getPlants())
+                statistic.append(plant.getName()).append(": count -- ").append(plant.getCount()).append("\n");
+        else
+            statistic.append("Ecosystem doesn't have plants\n");
 
         return statistic.toString();
     }
 
     @Override
     public String getEcosystemFullStatistic(String ecosystemName) throws WrongDataException {
-        EcosystemData ecosystem = ecosystemDAO.getEcosystem(ecosystemName);
+        EcosystemData ecosystem = ecosystemDAO.getFullEcosystem(ecosystemName);
         StringBuilder statistic = new StringBuilder();
 
         statistic.append("+----------------------------------------------------------------------+\n")
@@ -56,23 +62,30 @@ public class EcosystemServiceImpl implements EcosystemService {
                         ecosystem.getName(), ecosystem.getHumidity(), ecosystem.getAmountOfWater(), ecosystem.getSunshine(), ecosystem.getTemperature()))
                 .append("+----------------------------------------------------------------------+\n\n");
 
-        statistic.append("+---------------------------------------------------------------------------------------------+\n")
-                .append("|   Animal   |   Count   | Danger Level |  Meal Type  | Need Food | Norm Temp | Contains Food |\n")
-                .append("+---------------------------------------------------------------------------------------------+\n");
-        for (AnimalData animal : ecosystem.getAnimals())
-            statistic.append(String.format("| %-11.11s|%10d | %12s | %11s | %9.1f | %+9.1f | %13.1f |%n",
-                    animal.getName(), animal.getCount(), animal.getDangerLevel().toString(), animal.getMealType().toString(),
-                    animal.getNeededFood(), animal.getNormalTemperature(), animal.getContainsFood()));
-        statistic.append("+---------------------------------------------------------------------------------------------+\n\n");
+        if (!ecosystem.getAnimals().isEmpty()) {
+            statistic.append("+---------------------------------------------------------------------------------------------+\n")
+                    .append("|   Animal   |   Count   | Danger Level |  Meal Type  | Need Food | Norm Temp | Contains Food |\n")
+                    .append("+---------------------------------------------------------------------------------------------+\n");
+            for (AnimalData animal : ecosystem.getAnimals())
+                statistic.append(String.format("| %-11.11s|%10d | %12s | %11s | %9.1f | %+9.1f | %13.1f |%n",
+                        animal.getName(), animal.getCount(), animal.getDangerLevel().toString(), animal.getMealType().toString(),
+                        animal.getNeededFood(), animal.getNormalTemperature(), animal.getContainsFood()));
+            statistic.append("+---------------------------------------------------------------------------------------------+\n\n");
+        } else
+            statistic.append("Ecosystem doesn't have animals\n");
 
-        statistic.append("+-------------------------------------------------------------------------------------------+\n")
-                .append("|   Plant   |   Count   | Need Humidity | Need Water | Need Sun | Norm Temp | Contains Food |\n")
-                .append("+-------------------------------------------------------------------------------------------+\n");
-        for (PlantData plant : ecosystem.getPlants())
-            statistic.append(String.format("| %-10.10s|%10d | %13.2f | %10.1f | %8.2f | %+9.1f | %13.1f |%n",
-                    plant.getName(), plant.getCount(), plant.getNeededHumidity(), plant.getNeededWater(),
-                    plant.getNeededSunshine(), plant.getNormalTemperature(), plant.getContainsFood()));
-        statistic.append("+-------------------------------------------------------------------------------------------+");
+        if (!ecosystem.getPlants().isEmpty()) {
+            statistic.append("+-------------------------------------------------------------------------------------------+\n")
+                    .append("|   Plant   |   Count   | Need Humidity | Need Water | Need Sun | Norm Temp | Contains Food |\n")
+                    .append("+-------------------------------------------------------------------------------------------+\n");
+            for (PlantData plant : ecosystem.getPlants())
+                statistic.append(String.format("| %-10.10s|%10d | %13.2f | %10.1f | %8.2f | %+9.1f | %13.1f |%n",
+                        plant.getName(), plant.getCount(), plant.getNeededHumidity(), plant.getNeededWater(),
+                        plant.getNeededSunshine(), plant.getNormalTemperature(), plant.getContainsFood()));
+            statistic.append("+-------------------------------------------------------------------------------------------+");
+        } else
+            statistic.append("Ecosystem doesn't have plants\n");
+
         return statistic.toString();
     }
 
@@ -108,13 +121,13 @@ public class EcosystemServiceImpl implements EcosystemService {
     }
 
     @Override
-    public void saveEcosystemStatement(EcosystemData ecosystemData) throws WrongDataException {
-        ecosystemDAO.changeEcosystemParams(ecosystemData);
+    public void updateFullEcosystem(EcosystemData ecosystemData) throws WrongDataException {
+        ecosystemDAO.updateEcosystemParams(ecosystemData);
         for (AnimalData animalData : ecosystemData.getAnimals()) {
-            ecosystemDAO.changeAnimal(ecosystemData.getName(), animalData);
+            ecosystemDAO.updateAnimal(ecosystemData.getName(), animalData);
         }
         for (PlantData plantData : ecosystemData.getPlants()) {
-            ecosystemDAO.changePlant(ecosystemData.getName(), plantData);
+            ecosystemDAO.updatePlant(ecosystemData.getName(), plantData);
         }
     }
 
@@ -124,18 +137,13 @@ public class EcosystemServiceImpl implements EcosystemService {
     }
 
     @Override
-    public void closeEcosystem() {
-        ecosystemDAO.closeEcosystem();
-    }
-
-    @Override
     public void createEcosystem(EcosystemData ecosystemData) throws WrongDataException {
         ecosystemDAO.createEcosystem(ecosystemData);
     }
 
     @Override
     public EcosystemData getEcosystem(String name) throws WrongDataException {
-        return ecosystemDAO.getEcosystem(name);
+        return ecosystemDAO.getFullEcosystem(name);
     }
 
     @Override
@@ -145,7 +153,7 @@ public class EcosystemServiceImpl implements EcosystemService {
 
     @Override
     public void changeEcosystemParams(EcosystemData ecosystemData) throws WrongDataException {
-        ecosystemDAO.changeEcosystemParams(ecosystemData);
+        ecosystemDAO.updateEcosystemParams(ecosystemData);
     }
 
     @Override
@@ -155,7 +163,7 @@ public class EcosystemServiceImpl implements EcosystemService {
 
     @Override
     public void changeAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException {
-        ecosystemDAO.changeAnimal(ecosystemName, animalData);
+        ecosystemDAO.updateAnimal(ecosystemName, animalData);
     }
 
     @Override
@@ -175,7 +183,7 @@ public class EcosystemServiceImpl implements EcosystemService {
 
     @Override
     public void changePlant(String ecosystemName, PlantData plantData) throws WrongDataException {
-        ecosystemDAO.changePlant(ecosystemName, plantData);
+        ecosystemDAO.updatePlant(ecosystemName, plantData);
     }
 
     @Override
