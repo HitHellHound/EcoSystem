@@ -13,10 +13,13 @@ public interface EcosystemDAO {
     EcosystemData getEcosystemParams(String ecosystemName) throws WrongDataException;
     List<String> getExistingEcosystems();
     void changeEcosystemParams(EcosystemData ecosystemData) throws WrongDataException;
+    void closeEcosystem();
+
     List<AnimalData> getAnimals(String ecosystemName) throws WrongDataException;
     void changeAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException;
     void addAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException;
     void deleteAnimal(String ecosystemName, AnimalData animalData) throws WrongDataException;
+
     List<PlantData> getPlants(String ecosystemName) throws WrongDataException;
     void changePlant(String ecosystemName, PlantData plantData) throws WrongDataException;
     void addPlant(String ecosystemName, PlantData plantData) throws WrongDataException;

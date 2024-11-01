@@ -8,10 +8,7 @@ import ecxeption.WrongDataException;
 import enums.DangerLevel;
 import enums.MealType;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -33,8 +30,8 @@ public class EcosystemServiceImpl implements EcosystemService {
         statistic.append(ecosystem.getName())
                 .append(":\nHumidity -- ").append(ecosystem.getHumidity())
                 .append("\nAmount of Water -- ").append(ecosystem.getAmountOfWater())
-                .append("\nSunshine --").append(ecosystem.getSunshine())
-                .append("\nTemperature").append(ecosystem.getTemperature()).append("\n\n");
+                .append("\nSunshine -- ").append(ecosystem.getSunshine())
+                .append("\nTemperature -- ").append(ecosystem.getTemperature()).append("\n\n");
 
         statistic.append("Animals:\n");
         for (AnimalData animal : ecosystem.getAnimals())
@@ -80,6 +77,37 @@ public class EcosystemServiceImpl implements EcosystemService {
     }
 
     @Override
+    public String makeEcosystemChangeStatistic(EcosystemData ecosystemChanged, EcosystemData ecosystemOriginal) {
+        StringBuilder statistic = new StringBuilder();
+        statistic.append(ecosystemChanged.getName())
+                .append(":\nHumidity -- ").append(ecosystemChanged.getHumidity())
+                .append("\nAmount of Water -- ").append(ecosystemChanged.getAmountOfWater())
+                .append(" (").append(ecosystemChanged.getAmountOfWater() - ecosystemOriginal.getAmountOfWater()).append(")")
+                .append("\nSunshine -- ").append(ecosystemChanged.getSunshine())
+                .append("\nTemperature -- ").append(ecosystemChanged.getTemperature()).append("\n\n");
+
+        statistic.append("Animals:\n");
+        for (AnimalData animal : ecosystemChanged.getAnimals()) {
+            int countChange = animal.getCount() - ecosystemOriginal.getAnimals().stream()
+                    .filter(animalOriginal -> animalOriginal.getName().equals(animal.getName()))
+                    .findFirst().get().getCount();
+            statistic.append(animal.getName()).append(": count -- ").append(animal.getCount())
+                    .append(" (").append(String.format("%+d", countChange)).append(")\n");
+        }
+
+        statistic.append("\nPlants:\n");
+        for (PlantData plant : ecosystemChanged.getPlants()) {
+            int countChange = plant.getCount() - ecosystemOriginal.getPlants().stream()
+                    .filter(plantOriginal -> plantOriginal.getName().equals(plant.getName()))
+                    .findFirst().get().getCount();
+            statistic.append(plant.getName()).append(": count -- ").append(plant.getCount())
+                    .append(" (").append(String.format("%+d", countChange)).append(")\n");
+        }
+
+        return statistic.toString();
+    }
+
+    @Override
     public void saveEcosystemStatement(EcosystemData ecosystemData) throws WrongDataException {
         ecosystemDAO.changeEcosystemParams(ecosystemData);
         for (AnimalData animalData : ecosystemData.getAnimals()) {
@@ -93,6 +121,11 @@ public class EcosystemServiceImpl implements EcosystemService {
     @Override
     public List<String> getExistingEcosystems() {
         return ecosystemDAO.getExistingEcosystems();
+    }
+
+    @Override
+    public void closeEcosystem() {
+        ecosystemDAO.closeEcosystem();
     }
 
     @Override
@@ -156,7 +189,9 @@ public class EcosystemServiceImpl implements EcosystemService {
     }
 
     @Override
-    public EcosystemData doTheEvolution(EcosystemData ecosystem) {
+    public EcosystemData doTheEvolution(EcosystemData ecosystemOriginal) {
+        EcosystemData ecosystem = makeEcosystemDataCopy(ecosystemOriginal);
+
         Map<PlantData, Float> plantsToCoef = calculatePlantPopulationCoefficients(ecosystem);
 
         List<AnimalData> carnivorousAnimals = ecosystem.getAnimals().stream()
@@ -399,6 +434,25 @@ public class EcosystemServiceImpl implements EcosystemService {
         }
 
         return ecosystem;
+    }
+
+    private EcosystemData makeEcosystemDataCopy(EcosystemData ecosystemOriginal) {
+        EcosystemData ecosystemCopy = new EcosystemData(ecosystemOriginal.getName(), ecosystemOriginal.getHumidity(),
+                ecosystemOriginal.getAmountOfWater(), ecosystemOriginal.getSunshine(), ecosystemOriginal.getTemperature());
+        ecosystemCopy.setAnimals(new ArrayList<>());
+        ecosystemCopy.setPlants(new ArrayList<>());
+
+        ecosystemOriginal.getAnimals().forEach(animal ->
+                ecosystemCopy.getAnimals().add(new AnimalData(animal.getName(), animal.getCount(),
+                        animal.getDangerLevel(), animal.getMealType(),
+                        animal.getNeededFood(), animal.getNormalTemperature(), animal.getContainsFood())));
+
+        ecosystemOriginal.getPlants().forEach(plant ->
+                ecosystemCopy.getPlants().add(new PlantData(plant.getName(), plant.getCount(),
+                        plant.getNeededHumidity(), plant.getNeededWater(), plant.getNeededSunshine(),
+                        plant.getNormalTemperature(), plant.getContainsFood())));
+
+        return ecosystemCopy;
     }
 
     private Map<PlantData, Float> calculatePlantPopulationCoefficients(EcosystemData ecosystem) {

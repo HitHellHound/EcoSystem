@@ -83,14 +83,13 @@ public abstract class AbstractMenu {
                 if (i >= min && i <= max)
                     return i;
                 else
-                    System.out.println("Enter number between" + min + " and " + max + "!");
+                    System.out.println("Enter number between " + min + " and " + max + "!");
             } else {
                 System.out.println("Enter correct integer!");
                 console.next();
             }
         }
     }
-
 
     protected float requireFloat() {
         float f;

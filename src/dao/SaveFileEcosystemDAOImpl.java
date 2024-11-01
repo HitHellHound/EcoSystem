@@ -81,6 +81,11 @@ public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
     }
 
     @Override
+    public void closeEcosystem() {
+        loadedEcosystem = null;
+    }
+
+    @Override
     public List<AnimalData> getAnimals(String ecosystemName) throws WrongDataException {
         if (!isEcosystemLoaded(ecosystemName)) {
             loadEcosystem(ecosystemName);

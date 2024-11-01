@@ -32,12 +32,13 @@ public class EcosystemMenuConsole extends AbstractMenu {
             System.out.println(CHANGE_ENTITIES + ". Change entities");
             System.out.println(ADD_NEW_ENTITY + ". Add new entity");
             System.out.println(EVOLUTION_STEP + ". Make Evolution step");
+            System.out.println(PREDICTION + ". Make prediction");
             System.out.println(EXIT + ". Go back");
 
-            //ecosystemService.doTheEvolution(ecosystemName);
             try {
-                switch (chooseOption(EVOLUTION_STEP)) {
+                switch (chooseOption(PREDICTION)) {
                     case EXIT:
+                        ecosystemService.closeEcosystem();
                         return;
                     case SHORT_STATISTIC:
                         flushConsole();
@@ -68,6 +69,12 @@ public class EcosystemMenuConsole extends AbstractMenu {
                         flushConsole();
                         doTheEvolution();
                         pressEnterToContinue();
+                        break;
+                    case PREDICTION:
+                        flushConsole();
+                        makePrediction();
+                        pressEnterToContinue();
+                        break;
                 }
             } catch (WrongDataException exception) {
                 System.out.println("Some problems with ecosystem persistence: " + exception.getMessage());
@@ -98,17 +105,17 @@ public class EcosystemMenuConsole extends AbstractMenu {
                 break;
             case AMOUNT_OF_WATER:
                 System.out.print("Current amount of water -- " + ecosystemData.getAmountOfWater()
-                        + "Enter new amount of water(non negative): ");
+                        + ". Enter new amount of water(non negative): ");
                 ecosystemData.setAmountOfWater(requireNonNegativeFloat());
                 break;
             case SUNSHINE:
                 System.out.print("Current sunshine -- " + ecosystemData.getSunshine()
-                        + "Enter new sunshine (from 0,00 to 1,00): ");
+                        + ". Enter new sunshine (from 0,00 to 1,00): ");
                 ecosystemData.setSunshine(requireNormalizedValue());
                 break;
             case TEMPERATURE:
                 System.out.print("Current temperature -- " + ecosystemData.getTemperature()
-                        + "Enter new temperature: ");
+                        + ". Enter new temperature: ");
                 ecosystemData.setTemperature(requireFloat());
                 break;
         }
@@ -289,11 +296,23 @@ public class EcosystemMenuConsole extends AbstractMenu {
     }
 
     private void doTheEvolution() throws WrongDataException {
-        System.out.println("Ecosystem before evolution: ");
-        System.out.println(ecosystemService.getEcosystemShortStatistic(ecosystemName));
-        EcosystemData ecosystemData = ecosystemService.doTheEvolution(ecosystemService.getEcosystem(ecosystemName));
-        ecosystemService.saveEcosystemStatement(ecosystemData);
+        EcosystemData ecosystemOriginal = ecosystemService.getEcosystem(ecosystemName);
+        EcosystemData ecosystemEvolved = ecosystemService.doTheEvolution(ecosystemOriginal);
+        ecosystemService.saveEcosystemStatement(ecosystemEvolved);
         System.out.println("Ecosystem after evolution: ");
-        System.out.println(ecosystemService.getEcosystemShortStatistic(ecosystemName));
+        System.out.println(ecosystemService.makeEcosystemChangeStatistic(ecosystemEvolved, ecosystemOriginal));
+    }
+
+    private void makePrediction() throws WrongDataException {
+        System.out.println("How many steps of Evolution you want to predict? (Max -- 5)");
+        int evolutionSteps = requireBounderedInt(0, 5);
+        flushConsole();
+        EcosystemData ecosystemOriginal = ecosystemService.getEcosystem(ecosystemName);
+        EcosystemData ecosystemEvolved = ecosystemOriginal;
+        for (int i = 0; i < evolutionSteps; i++) {
+            ecosystemEvolved = ecosystemService.doTheEvolution(ecosystemEvolved);
+        }
+        System.out.println("Ecosystem evolution predict after " + evolutionSteps + " steps: ");
+        System.out.println(ecosystemService.makeEcosystemChangeStatistic(ecosystemEvolved, ecosystemOriginal));
     }
 }
