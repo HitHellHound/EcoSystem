@@ -8,6 +8,7 @@ import service.EcosystemService;
 import enums.DangerLevel;
 import enums.MealType;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
@@ -19,11 +20,15 @@ import static console.MenuOptions.*;
 
 public class EcosystemMenuConsole extends AbstractMenu {
     private final static Logger autoEvolutionLogger;
+    private final static String LOG_DIRECTORY = "logs/";
     static {
         autoEvolutionLogger = Logger.getLogger(EcosystemMenuConsole.class.getName());
         autoEvolutionLogger.setUseParentHandlers(false);
+        File logDir = new File(LOG_DIRECTORY);
+        if (!logDir.exists()) {
+            new File(LOG_DIRECTORY).mkdirs();
+        }
     }
-    private final static String LOG_DIRECTORY = "logs/";
 
     private final String ecosystemName;
 

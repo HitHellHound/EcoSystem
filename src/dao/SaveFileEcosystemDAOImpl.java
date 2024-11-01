@@ -21,6 +21,12 @@ public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
     public static final String SAVE_FILE_PREFIX = "save_";
     public static final String SAVE_FILE_EXTENSION = ".txt";
     private final static float FLOAT_FAULT = 0.0005f;
+    static {
+        File saveDir = new File(SAVES_PATH);
+        if (!saveDir.exists()) {
+            new File(SAVES_PATH).mkdirs();
+        }
+    }
 
     private Ecosystem loadedEcosystem;
 
@@ -55,10 +61,6 @@ public class SaveFileEcosystemDAOImpl implements EcosystemDAO {
     @Override
     public List<String> getExistingEcosystems() {
         File[] files = new File(SAVES_PATH).listFiles();
-        if (files == null) {
-            new File(SAVES_PATH).mkdirs();
-            files = new File(SAVES_PATH).listFiles();
-        }
         return Stream.of(files).
                 filter(file -> !file.isDirectory())
                 .map(File::getName)
